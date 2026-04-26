@@ -7,8 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Telemetry IPC API** — `window.api.openTelemetryStream(): MessagePort` replaced with `window.api.subscribeTelemetry(callback): () => void`. `MessagePort` cannot cross `contextBridge` (its methods are stripped), so the port now lives entirely in the preload script and the renderer subscribes via a callback. Renderer never holds the port, gets back an unsubscribe function instead.
+- Bumped `@apexline-app/apr` 0.1.1 → 0.1.2 (apr distribution fix: externalized `react/*` and `react-dom/*` subpath imports so the library bundle no longer ships a Rolldown CJS-interop `require()` shim that throws in pure-ESM consumers).
+
 ### Added
 
+- **Routing + layout shell** — TanStack Router (file-based, memory history) wired up in the renderer:
+  - `src/routes/__root.tsx` — `AppShell` with sidebar nav (Live / Replays / Stats / Settings) and `<Outlet />` for the active page; active link highlighted via `activeProps`.
+  - `src/routes/index.tsx` — Live page (was the smoke screen); consumes `useLapTelemetry` and renders stream status + last sample.
+  - `src/routes/replays.tsx`, `src/routes/stats.tsx` — placeholders for upcoming sections.
+  - `src/routes/settings.tsx` — first real "page" backed by `useSettings`; theme + telemetry-rate buttons reflect current persisted state and call IPC `settings:set` on click.
+  - `createMemoryHistory` chosen over browser/hash history because Electron windows have no URL bar and `file://` builds don't support `pushState`.
+  - `@tanstack/router-plugin/vite` regenerates `src/route-tree.gen.ts` on dev; `tsr generate` runs as `prelint:types` so `tsc` works in CI without Vite.
+  - `.prettierignore` excludes the generated route tree.
+  - `src/app.tsx` reduced to a `RouterProvider` wrapper; `lapMs` smoke prop removed.
 - **Window state persistence** — main window remembers `x`, `y`, `width`, `height`, `isMaximized`, and `isFullScreen` between launches via [`electron-window-state`](https://github.com/mawie81/electron-window-state). State stored at `userData/window-state.json`. Disconnected-display edge cases (saved coords on a monitor that's no longer attached) are handled by the library — falls back to default size on the primary display. New default size: 1280×800.
 - **Settings persistence** — settings now survive app restart. New `src/main/file-storage.ts` exposes generic `readJson<T>(filename, schema)` / `writeJson<T>(filename, data)` backed by `app.getPath('userData')` with atomic write (temp file + rename) and Zod-driven validation on read. Settings handler reads on registration and persists after every `settings:set`. Missing or corrupt file falls back to schema defaults.
 - **Typed IPC foundation** (`src/ipc/`):

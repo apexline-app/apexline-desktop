@@ -10,6 +10,4 @@ const rootEl = document.createElement('div');
 rootEl.id = 'root';
 document.body.replaceChildren(rootEl);
 
-createRoot(rootEl).render(
-  createElement(StrictMode, null, createElement(App, { lapMs: 72500 })),
-);
+createRoot(rootEl).render(createElement(StrictMode, null, createElement(App)));

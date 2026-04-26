@@ -8,3 +8,4 @@ out/
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+src/route-tree.gen.ts
