@@ -1,5 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import started from 'electron-squirrel-startup';
+import windowStateKeeper from 'electron-window-state';
 import path from 'node:path';
 
 import { registerSettingsHandlers } from '@/ipc/settings/handler';
@@ -11,10 +12,16 @@ if (started) {
 }
 
 const createWindow = () => {
-  // Create the browser window.
+  const windowState = windowStateKeeper({
+    defaultWidth: 1280,
+    defaultHeight: 800,
+  });
+
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    x: windowState.x,
+    y: windowState.y,
+    width: windowState.width,
+    height: windowState.height,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
@@ -22,6 +29,8 @@ const createWindow = () => {
       sandbox: true,
     },
   });
+
+  windowState.manage(mainWindow);
 
   // and load the index.html of the app.
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {

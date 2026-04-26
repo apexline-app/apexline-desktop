@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Window state persistence** — main window remembers `x`, `y`, `width`, `height`, `isMaximized`, and `isFullScreen` between launches via [`electron-window-state`](https://github.com/mawie81/electron-window-state). State stored at `userData/window-state.json`. Disconnected-display edge cases (saved coords on a monitor that's no longer attached) are handled by the library — falls back to default size on the primary display. New default size: 1280×800.
 - **Settings persistence** — settings now survive app restart. New `src/main/file-storage.ts` exposes generic `readJson<T>(filename, schema)` / `writeJson<T>(filename, data)` backed by `app.getPath('userData')` with atomic write (temp file + rename) and Zod-driven validation on read. Settings handler reads on registration and persists after every `settings:set`. Missing or corrupt file falls back to schema defaults.
 - **Typed IPC foundation** (`src/ipc/`):
   - Shared `Commands` / `Events` type maps (`src/ipc/types.ts`); each domain owns its own `types.ts` and `handler.ts`.
