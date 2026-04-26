@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { LapSample, TelemetryMessage } from '@/ipc/telemetry/types';
+import type { LapSample } from '@/ipc/telemetry/types';
 
 type TelemetryStatus = 'idle' | 'connected' | 'disconnected' | 'error';
 
@@ -20,10 +20,7 @@ export const useLapTelemetry = () => {
   const [state, setState] = useState<State>(initial);
 
   useEffect(() => {
-    const port = window.api.openTelemetryStream();
-
-    const handler = (event: MessageEvent<TelemetryMessage>) => {
-      const msg = event.data;
+    const unsubscribe = window.api.subscribeTelemetry(msg => {
       switch (msg.type) {
         case 'connected':
           setState(prev => ({ ...prev, status: 'connected', lastError: null }));
@@ -42,15 +39,9 @@ export const useLapTelemetry = () => {
           }));
           break;
       }
-    };
+    });
 
-    port.addEventListener('message', handler);
-    port.start();
-
-    return () => {
-      port.removeEventListener('message', handler);
-      port.close();
-    };
+    return unsubscribe;
   }, []);
 
   return state;

@@ -1,6 +1,9 @@
 import { contextBridge, ipcRenderer } from 'electron';
 
-import { TELEMETRY_OPEN_CHANNEL } from '@/ipc/telemetry/types';
+import {
+  TELEMETRY_OPEN_CHANNEL,
+  type TelemetryMessage,
+} from '@/ipc/telemetry/types';
 import type { Commands, Events } from '@/ipc/types';
 
 const api = {
@@ -22,10 +25,14 @@ const api = {
     };
   },
 
-  openTelemetryStream: (): MessagePort => {
+  subscribeTelemetry: (listener: (msg: TelemetryMessage) => void) => {
     const channel = new MessageChannel();
     ipcRenderer.postMessage(TELEMETRY_OPEN_CHANNEL, null, [channel.port2]);
-    return channel.port1;
+    channel.port1.onmessage = event => listener(event.data as TelemetryMessage);
+    channel.port1.start();
+    return () => {
+      channel.port1.close();
+    };
   },
 };
 
