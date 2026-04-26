@@ -41,6 +41,11 @@ updates:
           - "@electron/*"
           - "electron"
           - "electron-squirrel-startup"
+    ignore:
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@electron/fuses"
+        update-types: ["version-update:semver-major"]
     open-pull-requests-limit: 99
 
   - package-ecosystem: github-actions
