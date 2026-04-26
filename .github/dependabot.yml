@@ -1,0 +1,51 @@
+version: 2
+
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "04:00"
+    groups:
+      eslint:
+        patterns:
+          - "eslint"
+          - "@eslint/js"
+      typescript-eslint:
+        patterns:
+          - "typescript-eslint"
+          - "@typescript-eslint/*"
+      prettier:
+        patterns:
+          - "prettier"
+          - "@trivago/prettier-plugin-sort-imports"
+          - "prettier-plugin-*"
+      typescript:
+        patterns:
+          - "typescript"
+          - "ts-*"
+          - "@types/node"
+      husky:
+        patterns:
+          - "husky"
+          - "@commitlint/*"
+          - "is-ci"
+      vite:
+        patterns:
+          - "vite"
+          - "vite-plugin-*"
+          - "@vitejs/*"
+      electron-forge:
+        patterns:
+          - "@electron-forge/*"
+          - "@electron/*"
+          - "electron"
+          - "electron-squirrel-startup"
+    open-pull-requests-limit: 99
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "04:00"
+    open-pull-requests-limit: 10

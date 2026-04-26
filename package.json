@@ -1,8 +1,8 @@
 {
   "name": "apexline-desktop",
   "productName": "apexline-desktop",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "version": "0.0.1",
+  "description": "Apexline desktop app — Electron + React + TypeScript.",
   "main": ".vite/build/main.js",
   "private": true,
   "scripts": {
@@ -10,34 +10,62 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
-    "lint": "eslint --ext .ts,.tsx ."
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:format": "prettier --check '**/*.{js,jsx,ts,tsx,css,md,json}' --config .prettierrc",
+    "lint:types": "tsc --noEmit --skipLibCheck --pretty true",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json}' --log-level silent --config .prettierrc",
+    "prepare": "is-ci || husky"
   },
-  "keywords": [],
+  "keywords": [
+    "apexline",
+    "electron",
+    "desktop",
+    "iracing"
+  ],
   "author": {
     "name": "Damian Kądziela",
     "email": "damiankadziela4@gmail.com"
   },
-  "license": "MIT",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apexline-app/apexline-desktop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/apexline-app/apexline-desktop/issues"
+  },
+  "homepage": "https://github.com/apexline-app/apexline-desktop#readme",
   "devDependencies": {
-    "@electron-forge/cli": "^7.11.1",
-    "@electron-forge/maker-deb": "^7.11.1",
-    "@electron-forge/maker-rpm": "^7.11.1",
-    "@electron-forge/maker-squirrel": "^7.11.1",
-    "@electron-forge/maker-zip": "^7.11.1",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.11.1",
-    "@electron-forge/plugin-fuses": "^7.11.1",
-    "@electron-forge/plugin-vite": "^7.11.1",
-    "@electron/fuses": "^1.8.0",
-    "@types/electron-squirrel-startup": "^1.0.2",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0",
+    "@commitlint/cli": "20.5.0",
+    "@commitlint/config-conventional": "20.5.0",
+    "@electron-forge/cli": "7.11.1",
+    "@electron-forge/maker-deb": "7.11.1",
+    "@electron-forge/maker-rpm": "7.11.1",
+    "@electron-forge/maker-squirrel": "7.11.1",
+    "@electron-forge/maker-zip": "7.11.1",
+    "@electron-forge/plugin-auto-unpack-natives": "7.11.1",
+    "@electron-forge/plugin-fuses": "7.11.1",
+    "@electron-forge/plugin-vite": "7.11.1",
+    "@electron/fuses": "1.8.0",
+    "@eslint/js": "10.0.1",
+    "@trivago/prettier-plugin-sort-imports": "6.0.2",
+    "@types/electron-squirrel-startup": "1.0.2",
+    "@types/is-ci": "3.0.4",
+    "@types/node": "25.6.0",
+    "@typescript-eslint/eslint-plugin": "8.59.0",
+    "@typescript-eslint/parser": "8.59.0",
     "electron": "41.3.0",
-    "eslint": "^8.57.1",
-    "eslint-plugin-import": "^2.32.0",
-    "typescript": "~4.5.4",
-    "vite": "^5.4.21"
+    "eslint": "10.2.1",
+    "globals": "17.5.0",
+    "husky": "9.1.7",
+    "is-ci": "4.1.0",
+    "prettier": "3.8.3",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.59.0",
+    "vite": "5.4.21"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
+    "electron-squirrel-startup": "1.0.1"
   }
 }
