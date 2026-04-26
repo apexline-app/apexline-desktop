@@ -21,20 +21,22 @@ function AppShell() {
         <h1 className='mb-4 px-3 font-display text-lg text-brand-primary'>
           Apexline
         </h1>
-        {NAV_ITEMS.map(item => (
-          <Link
-            key={item.to}
-            to={item.to}
-            className='rounded-md px-3 py-2 font-mono text-sm text-text-secondary hover:bg-bg-tertiary'
-            activeProps={{
-              className:
-                'rounded-md px-3 py-2 font-mono text-sm bg-bg-tertiary text-brand-primary',
-            }}
-            activeOptions={{ exact: item.to === '/' }}
-          >
-            {item.label}
-          </Link>
-        ))}
+        <nav className='flex flex-col gap-1' aria-label='Primary'>
+          {NAV_ITEMS.map(item => (
+            <Link
+              key={item.to}
+              to={item.to}
+              className='rounded-md px-3 py-2 font-mono text-sm text-text-secondary hover:bg-bg-tertiary'
+              activeProps={{
+                className:
+                  'rounded-md px-3 py-2 font-mono text-sm bg-bg-tertiary text-brand-primary',
+              }}
+              activeOptions={{ exact: item.to === '/' }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </nav>
       </aside>
 
       <main className='flex-1 overflow-auto p-8'>
