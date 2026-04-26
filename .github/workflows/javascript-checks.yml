@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       github.event.pull_request.draft == false
+    permissions:
+      contents: read
+      packages: read
     env:
       TZ: Europe/Warsaw
 
