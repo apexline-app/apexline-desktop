@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Settings persistence** — settings now survive app restart. New `src/main/file-storage.ts` exposes generic `readJson<T>(filename, schema)` / `writeJson<T>(filename, data)` backed by `app.getPath('userData')` with atomic write (temp file + rename) and Zod-driven validation on read. Settings handler reads on registration and persists after every `settings:set`. Missing or corrupt file falls back to schema defaults.
 - **Typed IPC foundation** (`src/ipc/`):
   - Shared `Commands` / `Events` type maps (`src/ipc/types.ts`); each domain owns its own `types.ts` and `handler.ts`.
   - `withValidation(schema, handler)` helper wraps `ipcMain.handle` with Zod parsing at the boundary.

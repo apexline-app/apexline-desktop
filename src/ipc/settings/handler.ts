@@ -1,6 +1,7 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
 import { withValidation } from '@/ipc/validation';
+import { readJson, writeJson } from '@/main/file-storage';
 
 import {
   type Settings,
@@ -9,7 +10,7 @@ import {
   SettingsSetInputSchema,
 } from './types';
 
-const state: Settings = SettingsSchema.parse({});
+const SETTINGS_FILE = 'settings.json';
 
 const broadcast = (next: Settings) => {
   for (const win of BrowserWindow.getAllWindows()) {
@@ -18,6 +19,10 @@ const broadcast = (next: Settings) => {
 };
 
 export const registerSettingsHandlers = () => {
+  const state: Settings = readJson(SETTINGS_FILE, SettingsSchema);
+
+  const persist = () => writeJson(SETTINGS_FILE, state);
+
   ipcMain.handle('settings:get-all', () => state);
 
   ipcMain.handle(
@@ -36,6 +41,7 @@ export const registerSettingsHandlers = () => {
           state.telemetryHz = input.value;
           break;
       }
+      persist();
       broadcast(state);
       return { ...state };
     }),
