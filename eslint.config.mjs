@@ -24,6 +24,8 @@ export default tseslint.config(
       'node_modules/**',
       'coverage/**',
       'public/**',
+      'playwright-report/**',
+      'test-results/**',
       'src/route-tree.gen.ts',
     ],
   },
@@ -88,6 +90,14 @@ export default tseslint.config(
   },
   {
     files: ['src/**/*.{test,spec}.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
+  {
+    files: ['e2e/**/*.{ts,tsx}'],
     languageOptions: {
       globals: {
         ...globals.browser,
