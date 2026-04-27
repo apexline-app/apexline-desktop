@@ -85,4 +85,12 @@ export default tseslint.config(
       },
     },
   },
+  {
+    files: ['src/**/*.{test,spec}.{ts,tsx}', 'src/test/**/*.{ts,tsx}'],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+    },
+  },
 );

@@ -3,6 +3,7 @@ dist/
 out/
 .vite/
 .cache/
+coverage/
 *.min.js
 *.min.css
 package-lock.json
