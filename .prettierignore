@@ -4,6 +4,7 @@ out/
 .vite/
 .cache/
 coverage/
+public/
 *.min.js
 *.min.css
 package-lock.json
