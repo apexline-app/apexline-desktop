@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Vitest + happy-dom + RTL** test infrastructure:
+  - `vitest.config.ts` with `@vitejs/plugin-react`, happy-dom environment, and `@/` alias mirroring `tsconfig`/`vite.renderer.config.ts`. Tanstack Router plugin intentionally omitted so tests don't regenerate `route-tree.gen.ts`.
+  - `src/test/setup.ts` registers `@testing-library/jest-dom/vitest` matchers and runs RTL `cleanup()` after each test.
+  - Smoke tests under `src/test/` cover the `@apexline-app/apr` resolution, the `@/` alias, and a minimal RTL render + `userEvent` interaction.
+  - Scripts: `npm test`, `npm run test:watch`, `npm run test:coverage` (v8).
+  - CI runs `npm test` after lint stages in `.github/workflows/javascript-checks.yml`.
+  - ESLint flat config gains a test-files override granting browser globals to `*.{test,spec}.{ts,tsx}` and `src/test/**`.
+
 ### Changed
 
 - **Telemetry IPC API** — `window.api.openTelemetryStream(): MessagePort` replaced with `window.api.subscribeTelemetry(callback): () => void`. `MessagePort` cannot cross `contextBridge` (its methods are stripped), so the port now lives entirely in the preload script and the renderer subscribes via a callback. Renderer never holds the port, gets back an unsubscribe function instead.

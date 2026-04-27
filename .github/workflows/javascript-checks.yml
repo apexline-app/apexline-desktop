@@ -1,4 +1,4 @@
-name: '(TypeScript | ESLint | Prettier)'
+name: '(TypeScript | ESLint | Prettier | Vitest)'
 on:
   push:
     branches:
@@ -36,3 +36,5 @@ jobs:
         run: npm run lint:format
       - name: ESLint
         run: npm run lint
+      - name: Vitest
+        run: npm test
