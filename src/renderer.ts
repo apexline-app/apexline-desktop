@@ -9,7 +9,7 @@ import './index.css';
 import './styles.css';
 
 async function startMocks() {
-  if (API_MODE !== 'mock') return;
+  if (API_MODE === 'real') return;
   const { worker } = await import('@/mocks/browser');
   await worker.start({
     onUnhandledRequest: 'bypass',

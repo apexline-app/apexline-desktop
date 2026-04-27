@@ -62,6 +62,16 @@ describe('MSW handlers', () => {
     expect(json._meta.reason).toBe('unauthorized');
   });
 
+  it('rejects /me with empty bearer token', async () => {
+    const res = await fetch('/api/v1/me', {
+      headers: { Authorization: 'Bearer  ' },
+    });
+
+    expect(res.status).toBe(401);
+    const json = await res.json();
+    expect(json._meta.reason).toBe('unauthorized');
+  });
+
   it('returns user from /me with bearer', async () => {
     const res = await fetch('/api/v1/me', {
       headers: { Authorization: 'Bearer mock.jwt.access' },

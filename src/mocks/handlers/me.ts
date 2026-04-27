@@ -6,7 +6,8 @@ import { mockUser } from '@/mocks/fixtures/user';
 export const meHandlers = [
   http.get('/api/v1/me', ({ request }) => {
     const auth = request.headers.get('Authorization');
-    if (!auth?.startsWith('Bearer ')) {
+    const token = auth?.startsWith('Bearer ') ? auth.slice(7).trim() : '';
+    if (!token) {
       return HttpResponse.json(
         errorResponse({
           message: 'Missing access token.',
