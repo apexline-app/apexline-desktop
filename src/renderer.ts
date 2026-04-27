@@ -2,12 +2,31 @@ import { createElement, StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
 
+import { API_MODE } from '@/lib/api-mode';
+
 import { App } from './app';
 import './index.css';
 import './styles.css';
 
-const rootEl = document.createElement('div');
-rootEl.id = 'root';
-document.body.replaceChildren(rootEl);
+async function startMocks() {
+  if (API_MODE !== 'mock') return;
+  const { worker } = await import('@/mocks/browser');
+  await worker.start({
+    onUnhandledRequest: 'bypass',
+    serviceWorker: { url: '/mockServiceWorker.js' },
+  });
+}
 
-createRoot(rootEl).render(createElement(StrictMode, null, createElement(App)));
+async function bootstrap() {
+  await startMocks();
+
+  const rootEl = document.createElement('div');
+  rootEl.id = 'root';
+  document.body.replaceChildren(rootEl);
+
+  createRoot(rootEl).render(
+    createElement(StrictMode, null, createElement(App)),
+  );
+}
+
+void bootstrap();
