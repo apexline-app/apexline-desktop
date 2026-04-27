@@ -18,7 +18,11 @@ async function startMocks() {
 }
 
 async function bootstrap() {
-  await startMocks();
+  try {
+    await startMocks();
+  } catch (error) {
+    console.error('[msw] failed to start mock worker:', error);
+  }
 
   const rootEl = document.createElement('div');
   rootEl.id = 'root';
