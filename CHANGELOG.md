@@ -9,15 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- **Playwright scaffolding (no specs yet)**:
-  - `@playwright/test@1.59` as devDep. No browser binaries installed — Electron e2e uses `_electron.launch()` from `playwright`, which reuses the bundled Chromium already shipping with Electron.
-  - `playwright.config.ts` — `testDir: './e2e'`, `testMatch: /.*\.spec\.ts$/`, `workers: 1`, `fullyParallel: false` (Electron e2e doesn't parallelize cleanly), HTML report at `playwright-report/`, output at `test-results/`.
-  - `e2e/.gitkeep` — placeholder for the first spec.
-  - Scripts: `npm run e2e`, `npm run e2e:ui`, `npm run e2e:report`.
+- **Playwright + first Electron e2e smoke**:
+  - `@playwright/test@1.59.1` as devDep. No browser binaries installed — Electron e2e uses `_electron.launch()` from `playwright`, reusing Chromium already bundled with Electron.
+  - `playwright.config.ts` — `testDir: './e2e'`, `testMatch: /.*\.spec\.ts$/`, `workers: 1`, `fullyParallel: false` (Electron e2e doesn't parallelize cleanly), HTML report at `playwright-report/`, output at `test-results/`, `trace`/`video` `retain-on-failure`.
+  - `e2e/app-launch.spec.ts` — first smoke: `_electron.launch({ args: ['.'] })`, `firstWindow()`, asserts `Apexline` heading is visible in the sidebar, then `app.close()`. ~1.5 s locally.
+  - Scripts: `pree2e: electron-forge package` (auto-runs before `e2e`, ~8 s on Linux), `e2e: playwright test`, `e2e:ui`, `e2e:report`.
   - `tsconfig.json` `include` adds `e2e/` and `playwright.config.ts`.
   - `eslint.config.mjs` — `e2e/**/*.{ts,tsx}` override grants browser globals; `playwright-report/` and `test-results/` added to ignores.
   - `.gitignore` and `.prettierignore` exclude `playwright-report/`, `test-results/`, `.playwright/`.
-  - CI workflow intentionally untouched — `npm run e2e` will be wired up with the first spec.
+  - **Separate CI workflow** `.github/workflows/playwright.yml` (`(Playwright | Electron e2e)`) runs `xvfb-run --auto-servernum npm run e2e`. Kept off the main `javascript-checks.yml` pipeline so the lint/type/unit chain stays fast and green even if e2e flake. On failure, `playwright-report/` is uploaded as a 7-day GitHub artifact.
 
 - **MSW + `VITE_API_MODE` mock-first dev mode**:
   - `src/lib/api-mode.ts` resolves `'mock' | 'hybrid' | 'real'` from `import.meta.env.VITE_API_MODE`; falls back to `'mock'` in dev, `'real'` in prod build.
