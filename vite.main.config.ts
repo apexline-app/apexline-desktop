@@ -18,7 +18,9 @@ export default defineConfig(({ mode }) => {
       'process.env.OAUTH_CLIENT_ID': JSON.stringify(
         env.OAUTH_CLIENT_ID ?? env.VITE_OAUTH_CLIENT_ID,
       ),
-      'process.env.SENTRY_DSN': JSON.stringify(env.SENTRY_DSN),
+      'process.env.SENTRY_DSN': JSON.stringify(
+        env.SENTRY_DSN ?? env.VITE_SENTRY_DSN,
+      ),
     },
   };
 });

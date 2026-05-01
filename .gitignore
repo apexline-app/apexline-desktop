@@ -94,6 +94,10 @@ out/
 # Claude Code project-local agent state (never commit)
 .claude/
 
+# VS Code local settings (extensions.json is committed intentionally)
+.vscode/*
+!.vscode/extensions.json
+
 # Playwright artifacts
 playwright-report/
 test-results/
