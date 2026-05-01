@@ -9,14 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root';
-import { Route as StatsRouteImport } from './routes/stats';
+import { Route as WhatsNewRouteImport } from './routes/whats-new';
 import { Route as SettingsRouteImport } from './routes/settings';
-import { Route as ReplaysRouteImport } from './routes/replays';
+import { Route as OnboardingRouteImport } from './routes/onboarding';
 import { Route as IndexRouteImport } from './routes/index';
 
-const StatsRoute = StatsRouteImport.update({
-  id: '/stats',
-  path: '/stats',
+const WhatsNewRoute = WhatsNewRouteImport.update({
+  id: '/whats-new',
+  path: '/whats-new',
   getParentRoute: () => rootRouteImport,
 } as any);
 const SettingsRoute = SettingsRouteImport.update({
@@ -24,9 +24,9 @@ const SettingsRoute = SettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any);
-const ReplaysRoute = ReplaysRouteImport.update({
-  id: '/replays',
-  path: '/replays',
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any);
 const IndexRoute = IndexRouteImport.update({
@@ -37,45 +37,45 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute;
-  '/replays': typeof ReplaysRoute;
+  '/onboarding': typeof OnboardingRoute;
   '/settings': typeof SettingsRoute;
-  '/stats': typeof StatsRoute;
+  '/whats-new': typeof WhatsNewRoute;
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute;
-  '/replays': typeof ReplaysRoute;
+  '/onboarding': typeof OnboardingRoute;
   '/settings': typeof SettingsRoute;
-  '/stats': typeof StatsRoute;
+  '/whats-new': typeof WhatsNewRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   '/': typeof IndexRoute;
-  '/replays': typeof ReplaysRoute;
+  '/onboarding': typeof OnboardingRoute;
   '/settings': typeof SettingsRoute;
-  '/stats': typeof StatsRoute;
+  '/whats-new': typeof WhatsNewRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: '/' | '/replays' | '/settings' | '/stats';
+  fullPaths: '/' | '/onboarding' | '/settings' | '/whats-new';
   fileRoutesByTo: FileRoutesByTo;
-  to: '/' | '/replays' | '/settings' | '/stats';
-  id: '__root__' | '/' | '/replays' | '/settings' | '/stats';
+  to: '/' | '/onboarding' | '/settings' | '/whats-new';
+  id: '__root__' | '/' | '/onboarding' | '/settings' | '/whats-new';
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
-  ReplaysRoute: typeof ReplaysRoute;
+  OnboardingRoute: typeof OnboardingRoute;
   SettingsRoute: typeof SettingsRoute;
-  StatsRoute: typeof StatsRoute;
+  WhatsNewRoute: typeof WhatsNewRoute;
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/stats': {
-      id: '/stats';
-      path: '/stats';
-      fullPath: '/stats';
-      preLoaderRoute: typeof StatsRouteImport;
+    '/whats-new': {
+      id: '/whats-new';
+      path: '/whats-new';
+      fullPath: '/whats-new';
+      preLoaderRoute: typeof WhatsNewRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     '/settings': {
@@ -85,11 +85,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SettingsRouteImport;
       parentRoute: typeof rootRouteImport;
     };
-    '/replays': {
-      id: '/replays';
-      path: '/replays';
-      fullPath: '/replays';
-      preLoaderRoute: typeof ReplaysRouteImport;
+    '/onboarding': {
+      id: '/onboarding';
+      path: '/onboarding';
+      fullPath: '/onboarding';
+      preLoaderRoute: typeof OnboardingRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     '/': {
@@ -104,9 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ReplaysRoute: ReplaysRoute,
+  OnboardingRoute: OnboardingRoute,
   SettingsRoute: SettingsRoute,
-  StatsRoute: StatsRoute,
+  WhatsNewRoute: WhatsNewRoute,
 };
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
