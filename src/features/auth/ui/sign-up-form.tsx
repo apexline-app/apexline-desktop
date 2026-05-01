@@ -108,7 +108,12 @@ export function SignUpForm() {
               </Alert>
             )}
 
-            <Button type='submit' disabled={isPending} className='w-full'>
+            <Button
+              variant='default'
+              type='submit'
+              disabled={isPending}
+              className='w-full'
+            >
               {isPending && <Spinner className='mr-2 h-4 w-4' />}
               {isPending ? 'Creating…' : 'Create account'}
             </Button>

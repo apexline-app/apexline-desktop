@@ -10,7 +10,7 @@ test('main window opens on sign-in route when unauthenticated', async () => {
 
   const banner = window.getByRole('banner');
   await expect(banner).toBeVisible();
-  await expect(banner).toContainText('Apexline');
+  await expect(banner).toContainText('apexline');
 
   // Fresh launch without refresh token in safeStorage → router redirects
   // to /sign-in. Sidebar nav is hidden on public routes (sign-in / sign-up
