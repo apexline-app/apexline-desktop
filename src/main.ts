@@ -3,10 +3,10 @@ import started from 'electron-squirrel-startup';
 import windowStateKeeper from 'electron-window-state';
 import path from 'node:path';
 
-import { registerAuthHandlers } from '@/ipc/auth/handler';
-import { registerSettingsHandlers } from '@/ipc/settings/handler';
-import { registerTelemetryStream } from '@/ipc/telemetry/stream';
-import { initSentryMain } from '@/sentry/init-main';
+import { registerAuthHandlers } from '@/features/auth/main/handler';
+import { registerSettingsHandlers } from '@/features/settings/main/handler';
+import { registerTelemetryStream } from '@/features/telemetry/main/stream';
+import { initSentryMain } from '@/platform/observability/init-main';
 
 initSentryMain();
 

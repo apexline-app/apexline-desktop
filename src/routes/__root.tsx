@@ -8,7 +8,7 @@ import {
   useNavigate,
 } from '@tanstack/react-router';
 
-import { useAuthBootstrap, useAuthStore } from '@/stores/use-auth-store';
+import { useAuthBootstrap, useAuthStore } from '@/features/auth';
 
 const PUBLIC_ROUTES = ['/sign-in', '/sign-up', '/2fa-challenge'] as const;
 

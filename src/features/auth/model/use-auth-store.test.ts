@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import type { AuthState } from '@/ipc/auth/types';
+import type { AuthState } from '@/features/auth/contracts';
 
 import { useAuthStore } from './use-auth-store';
 

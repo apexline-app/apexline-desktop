@@ -1,4 +1,4 @@
-import { z } from '@/ipc/validation';
+import { z } from '@/shared/ipc/validation';
 
 export const UserSchema = z.object({
   pid: z.string(),

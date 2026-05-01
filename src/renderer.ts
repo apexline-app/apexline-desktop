@@ -2,8 +2,8 @@ import { createElement, StrictMode } from 'react';
 
 import { createRoot } from 'react-dom/client';
 
-import { API_MODE } from '@/lib/api-mode';
-import { initSentryRenderer } from '@/sentry/init-renderer';
+import { initSentryRenderer } from '@/platform/observability/init-renderer';
+import { API_MODE } from '@/shared/api/api-mode';
 
 import { App } from './app';
 import './index.css';

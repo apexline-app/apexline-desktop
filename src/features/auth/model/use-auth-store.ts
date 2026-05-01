@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 
 import { create } from 'zustand';
 
-import type { AuthState, User } from '@/ipc/auth/types';
+import type { AuthState, User } from '@/features/auth/contracts';
 
 type Status = AuthState['status'] | 'loading';
 
