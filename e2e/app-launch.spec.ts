@@ -17,8 +17,8 @@ test('main window opens on sign-in route when unauthenticated', async () => {
   // / 2fa-challenge) — only banner + form are rendered.
   await expect(window.getByRole('heading', { name: 'Sign in' })).toBeVisible();
 
-  await expect(window.getByPlaceholder('email')).toBeVisible();
-  await expect(window.getByPlaceholder('password')).toBeVisible();
+  await expect(window.getByLabel('Email')).toBeVisible();
+  await expect(window.getByLabel('Password')).toBeVisible();
   await expect(
     window.getByRole('button', { name: 'Sign in', exact: true }),
   ).toBeVisible();
@@ -26,7 +26,7 @@ test('main window opens on sign-in route when unauthenticated', async () => {
     window.getByRole('button', { name: 'Sign in with Google' }),
   ).toBeVisible();
   await expect(
-    window.getByRole('link', { name: 'Create account' }),
+    window.getByRole('button', { name: 'Create account' }),
   ).toBeVisible();
 
   // Authenticated-only sidebar should NOT be present pre-auth.

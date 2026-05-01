@@ -1,16 +1,36 @@
-import { type SubmitEvent, useState } from 'react';
-
+import {
+  Alert,
+  AlertDescription,
+  Button,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Spinner,
+} from '@apexline-app/apr';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useNavigate } from '@tanstack/react-router';
+import { useForm } from 'react-hook-form';
 
 import { useVerify2fa } from '@/features/auth/api/use-verify-2fa';
+import {
+  type Verify2faInput,
+  Verify2faInputSchema,
+} from '@/features/auth/contracts';
 
 export function TwoFaChallengeForm() {
   const navigate = useNavigate();
   const { mutate: verify2fa, isPending, error } = useVerify2fa();
-  const [otp, setOtp] = useState('');
 
-  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const form = useForm<Verify2faInput>({
+    resolver: zodResolver(Verify2faInputSchema),
+    defaultValues: { otp: '' },
+  });
+
+  const onSubmit = ({ otp }: Verify2faInput) => {
     if (isPending) return;
     verify2fa(otp, {
       onSuccess: () => void navigate({ to: '/' }),
@@ -24,45 +44,53 @@ export function TwoFaChallengeForm() {
 
   return (
     <section className='flex h-full items-center justify-center'>
-      <form
-        onSubmit={onSubmit}
-        className='flex w-80 flex-col gap-4 rounded-md border border-border-subtle bg-bg-secondary p-6'
-      >
+      <div className='flex w-80 flex-col gap-4 rounded-md border border-border-subtle bg-bg-secondary p-6'>
         <h2 className='font-display text-xl text-text-primary'>
           Two-factor verification
         </h2>
-        <p className='text-xs text-text-tertiary'>
+        <p className='text-sm text-text-tertiary'>
           Enter the code from your authenticator app or a backup code.
         </p>
-        <label htmlFor='otp' className='text-xs text-text-secondary'>
-          Verification code
-        </label>
-        <input
-          id='otp'
-          type='text'
-          required
-          autoFocus
-          disabled={isPending}
-          inputMode='numeric'
-          pattern='[0-9a-zA-Z]*'
-          placeholder='123456'
-          value={otp}
-          onChange={e => setOtp(e.target.value)}
-          className='rounded-md border border-border-subtle bg-bg-primary px-3 py-2 font-mono text-sm tracking-widest'
-        />
-        {error && (
-          <p role='alert' className='text-xs text-danger-text'>
-            {error.message}
-          </p>
-        )}
-        <button
-          type='submit'
-          disabled={isPending}
-          className='rounded-md bg-brand-primary px-3 py-2 text-sm font-medium text-bg-primary disabled:opacity-50'
-        >
-          {isPending ? 'Verifying…' : 'Verify'}
-        </button>
-      </form>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className='flex flex-col gap-4'
+          >
+            <FormField
+              control={form.control}
+              name='otp'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Verification code</FormLabel>
+                  <FormControl>
+                    <Input
+                      autoFocus
+                      inputMode='numeric'
+                      placeholder='123456'
+                      disabled={isPending}
+                      className='font-mono tracking-widest'
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {error && (
+              <Alert variant='destructive'>
+                <AlertDescription>{error.message}</AlertDescription>
+              </Alert>
+            )}
+
+            <Button type='submit' disabled={isPending} className='w-full'>
+              {isPending && <Spinner className='mr-2 h-4 w-4' />}
+              {isPending ? 'Verifying…' : 'Verify'}
+            </Button>
+          </form>
+        </Form>
+      </div>
     </section>
   );
 }
