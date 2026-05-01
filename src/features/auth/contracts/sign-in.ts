@@ -1,8 +1,8 @@
 import { z } from '@/shared/ipc/validation';
 
 export const SignInInputSchema = z.object({
-  email: z.email(),
-  password: z.string().min(1),
+  email: z.email('Enter a valid email address.'),
+  password: z.string().min(1, 'Password is required.'),
 });
 
 export type SignInInput = z.infer<typeof SignInInputSchema>;
