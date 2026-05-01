@@ -5,26 +5,37 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+      day: monday
       time: "04:00"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
     groups:
+      apexline:
+        patterns:
+          - "@apexline-app/*"
+        update-types:
+          - "minor"
+          - "patch"
       eslint:
         patterns:
           - "eslint"
           - "@eslint/js"
+          - "globals"
       typescript-eslint:
         patterns:
           - "typescript-eslint"
           - "@typescript-eslint/*"
-      prettier:
-        patterns:
-          - "prettier"
-          - "@trivago/prettier-plugin-sort-imports"
-          - "prettier-plugin-*"
       typescript:
         patterns:
           - "typescript"
           - "ts-*"
           - "@types/node"
+      prettier:
+        patterns:
+          - "prettier"
+          - "@trivago/prettier-plugin-sort-imports"
+          - "prettier-plugin-*"
       husky:
         patterns:
           - "husky"
@@ -41,16 +52,53 @@ updates:
           - "@electron/*"
           - "electron"
           - "electron-squirrel-startup"
+          - "electron-window-state"
+      react:
+        patterns:
+          - "react"
+          - "react-dom"
+          - "@types/react"
+          - "@types/react-dom"
+      tanstack:
+        patterns:
+          - "@tanstack/*"
+      testing:
+        patterns:
+          - "@testing-library/*"
+      vitest:
+        patterns:
+          - "vitest"
+          - "@vitest/*"
+          - "happy-dom"
+      playwright:
+        patterns:
+          - "@playwright/test"
+          - "playwright"
+      msw:
+        patterns:
+          - "msw"
+      sentry:
+        patterns:
+          - "@sentry/*"
+      tailwind:
+        patterns:
+          - "tailwindcss"
+          - "@tailwindcss/*"
     ignore:
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@electron/fuses"
         update-types: ["version-update:semver-major"]
-    open-pull-requests-limit: 99
+      - dependency-name: "electron"
+        update-types: ["version-update:semver-major"]
+    open-pull-requests-limit: 30
 
   - package-ecosystem: github-actions
     directory: "/"
     schedule:
       interval: weekly
+      day: monday
       time: "04:00"
+    commit-message:
+      prefix: "chore(ci)"
     open-pull-requests-limit: 10
