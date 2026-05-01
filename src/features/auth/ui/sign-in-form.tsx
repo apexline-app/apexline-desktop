@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 
@@ -24,7 +24,7 @@ export function SignInForm() {
   const pending = signInPending || googlePending;
   const error = signInError?.message ?? googleError?.message ?? null;
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (pending) return;
     signIn(

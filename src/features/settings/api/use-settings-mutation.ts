@@ -7,13 +7,6 @@ import { settingsQueryKey } from './use-settings-query';
 const setSettings = (input: SettingsSetInput) =>
   window.api.invoke('settings:set', input);
 
-/**
- * Optimistic update: write the new key/value into the Query cache before
- * the IPC round-trip resolves so toggles feel instant. On error, restore
- * the previous snapshot. The `settings:changed` broadcast (handled in
- * useSettingsQuery) replaces the cache with the canonical main-side
- * payload — making this safe even if optimistic shape diverges.
- */
 export const useSettingsMutation = () => {
   const qc = useQueryClient();
 

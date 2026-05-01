@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 
@@ -9,7 +9,7 @@ export function TwoFaChallengeForm() {
   const { mutate: verify2fa, isPending, error } = useVerify2fa();
   const [otp, setOtp] = useState('');
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (isPending) return;
     verify2fa(otp, {

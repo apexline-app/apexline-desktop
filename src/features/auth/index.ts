@@ -1,8 +1,3 @@
-// Public API for the `auth` feature. Renderer-side imports must come
-// through this barrel; main-side handler is registered explicitly via
-// the `./main/handler` module from `src/main.ts` to avoid pulling
-// renderer code (React UI) into the main-process bundle.
-
 export {
   useLogout,
   useSignIn,
