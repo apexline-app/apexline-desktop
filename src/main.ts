@@ -22,6 +22,16 @@ const createWindow = () => {
     y: windowState.y,
     width: windowState.width,
     height: windowState.height,
+    backgroundColor: '#0a0a0b',
+    titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
+    titleBarOverlay:
+      process.platform === 'darwin'
+        ? false
+        : {
+            color: '#111113',
+            symbolColor: '#e5e7eb',
+            height: 36,
+          },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
