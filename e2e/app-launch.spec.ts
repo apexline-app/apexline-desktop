@@ -1,6 +1,6 @@
 import { _electron as electron, expect, test } from '@playwright/test';
 
-test('main window opens with the Apexline app shell visible', async () => {
+test('main window opens on sign-in route when unauthenticated', async () => {
   const app = await electron.launch({ args: ['.'] });
 
   const window = await app.firstWindow();
@@ -12,21 +12,25 @@ test('main window opens with the Apexline app shell visible', async () => {
   await expect(banner).toBeVisible();
   await expect(banner).toContainText('Apexline');
 
-  const nav = window.getByRole('navigation', { name: 'Primary' });
-  await expect(nav).toBeVisible();
-  await expect(nav.getByRole('link', { name: 'Dashboard' })).toBeVisible();
-  await expect(nav.getByRole('link', { name: 'Onboarding' })).toBeVisible();
-  await expect(nav.getByRole('link', { name: 'Settings' })).toBeVisible();
-  await expect(nav.getByRole('link', { name: "What's new" })).toBeVisible();
+  // Fresh launch without refresh token in safeStorage → router redirects
+  // to /sign-in. Sidebar nav is hidden on public routes (sign-in / sign-up
+  // / 2fa-challenge) — only banner + form are rendered.
+  await expect(window.getByRole('heading', { name: 'Sign in' })).toBeVisible();
 
-  const pitWall = nav.locator('[aria-disabled="true"]');
-  await expect(pitWall).toBeVisible();
-  await expect(pitWall).toContainText('Pit Wall');
-  await expect(pitWall).toContainText('soon');
-
+  await expect(window.getByPlaceholder('email')).toBeVisible();
+  await expect(window.getByPlaceholder('password')).toBeVisible();
+  await expect(window.getByRole('button', { name: 'Sign in' })).toBeVisible();
   await expect(
-    window.getByRole('heading', { name: 'Dashboard' }),
+    window.getByRole('button', { name: 'Sign in with Google' }),
   ).toBeVisible();
+  await expect(
+    window.getByRole('link', { name: 'Create account' }),
+  ).toBeVisible();
+
+  // Authenticated-only sidebar should NOT be present pre-auth.
+  await expect(window.getByRole('navigation', { name: 'Primary' })).toHaveCount(
+    0,
+  );
 
   await app.close();
 });
