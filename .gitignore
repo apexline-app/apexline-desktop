@@ -90,3 +90,11 @@ typings/
 
 # Electron-Forge
 out/
+
+# Claude Code project-local agent state (never commit)
+.claude/
+
+# Playwright artifacts
+playwright-report/
+test-results/
+.playwright/

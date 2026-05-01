@@ -5,6 +5,9 @@ out/
 .cache/
 coverage/
 public/
+playwright-report/
+test-results/
+.playwright/
 *.min.js
 *.min.css
 package-lock.json
