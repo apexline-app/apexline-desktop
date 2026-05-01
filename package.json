@@ -92,6 +92,7 @@
   },
   "dependencies": {
     "@apexline-app/apr": "0.1.2",
+    "@sentry/electron": "7.13.0",
     "@tanstack/react-router": "1.168.24",
     "electron-squirrel-startup": "1.0.1",
     "electron-window-state": "5.0.3",

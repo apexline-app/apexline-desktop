@@ -3,4 +3,5 @@
 
 interface ImportMetaEnv {
   readonly VITE_API_MODE?: 'mock' | 'hybrid' | 'real';
+  readonly VITE_SENTRY_DSN?: string;
 }

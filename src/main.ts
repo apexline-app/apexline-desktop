@@ -5,6 +5,9 @@ import path from 'node:path';
 
 import { registerSettingsHandlers } from '@/ipc/settings/handler';
 import { registerTelemetryStream } from '@/ipc/telemetry/stream';
+import { initSentryMain } from '@/sentry/init-main';
+
+initSentryMain();
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {

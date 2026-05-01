@@ -3,10 +3,13 @@ import { createElement, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
 import { API_MODE } from '@/lib/api-mode';
+import { initSentryRenderer } from '@/sentry/init-renderer';
 
 import { App } from './app';
 import './index.css';
 import './styles.css';
+
+initSentryRenderer();
 
 async function startMocks() {
   if (API_MODE === 'real') return;
