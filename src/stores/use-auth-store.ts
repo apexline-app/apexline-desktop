@@ -56,10 +56,20 @@ export const useAuthBootstrap = () => {
 
   useEffect(() => {
     let cancelled = false;
-    void window.api.invoke('auth:get-state', undefined).then(initial => {
-      if (!cancelled) setState(initial);
-    });
+    // Subscribe before fetching the initial snapshot — main process can
+    // broadcast `auth:state-changed` immediately after a successful
+    // bootstrap refresh, and we don't want to miss that event window.
     const unsubscribe = window.api.on('auth:state-changed', setState);
+    window.api
+      .invoke('auth:get-state', undefined)
+      .then(initial => {
+        if (!cancelled) setState(initial);
+      })
+      .catch(() => {
+        // IPC failure leaves the store stuck in 'loading'; fall back to
+        // unauthenticated so the router can navigate to /sign-in.
+        if (!cancelled) setState({ status: 'unauthenticated' });
+      });
     return () => {
       cancelled = true;
       unsubscribe();

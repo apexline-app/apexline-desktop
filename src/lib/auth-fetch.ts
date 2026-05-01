@@ -1,9 +1,21 @@
 import { API_PATHS } from '@/lib/api-paths';
 
+const AUTH_FETCH_TIMEOUT_MS = 15_000;
+
 export const apiBase = () =>
   process.env.APEXLINE_API_URL ?? 'http://localhost:3000';
 
 export const oauthClientId = () => process.env.OAUTH_CLIENT_ID ?? 'apx_desktop';
+
+const fetchWithTimeout = async (input: string, init: RequestInit) => {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), AUTH_FETCH_TIMEOUT_MS);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+};
 
 export type OauthTokenResponse = {
   access_token: string;
@@ -29,7 +41,7 @@ export type OauthTokenResult =
 export const postOauthToken = async (
   params: Record<string, string>,
 ): Promise<OauthTokenResult> => {
-  const res = await fetch(`${apiBase()}${API_PATHS.OAUTH_TOKEN}`, {
+  const res = await fetchWithTimeout(`${apiBase()}${API_PATHS.OAUTH_TOKEN}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams(params),
@@ -50,7 +62,7 @@ export const postOauthToken = async (
 
 /** POST /oauth/revoke — best-effort, ignores response. */
 export const revokeToken = async (refreshToken: string) => {
-  await fetch(`${apiBase()}${API_PATHS.OAUTH_REVOKE}`, {
+  await fetchWithTimeout(`${apiBase()}${API_PATHS.OAUTH_REVOKE}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
@@ -89,7 +101,7 @@ export const apiJson = async <T>(
   path: string,
   init?: RequestInitWithAuth,
 ): Promise<T> => {
-  const res = await fetch(`${apiBase()}${path}`, {
+  const res = await fetchWithTimeout(`${apiBase()}${path}`, {
     ...init,
     headers: buildHeaders(init),
   });
@@ -108,7 +120,7 @@ export const apiJsonRaw = async <T>(
   path: string,
   init?: RequestInitWithAuth,
 ): Promise<T> => {
-  const res = await fetch(`${apiBase()}${path}`, {
+  const res = await fetchWithTimeout(`${apiBase()}${path}`, {
     ...init,
     headers: buildHeaders(init),
   });

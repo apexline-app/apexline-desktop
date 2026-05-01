@@ -5,8 +5,22 @@ import path from 'node:path';
 const resolvePath = (filename: string) =>
   path.join(app.getPath('userData'), filename);
 
+/**
+ * On Linux without a system keyring (gnome-libsecret / KWallet),
+ * `safeStorage.isEncryptionAvailable()` may return true while the backend
+ * is `'basic_text'` — a hardcoded plaintext password mechanism providing
+ * no real protection (Electron docs). We reject that backend so refresh
+ * tokens are never persisted unencrypted; the trade-off is re-sign-in on
+ * such systems after each restart.
+ */
+const isSecureEncryptionAvailable = () => {
+  if (!safeStorage.isEncryptionAvailable()) return false;
+  if (process.platform !== 'linux') return true;
+  return safeStorage.getSelectedStorageBackend() !== 'basic_text';
+};
+
 export const writeEncryptedJson = (filename: string, data: unknown) => {
-  if (!safeStorage.isEncryptionAvailable()) {
+  if (!isSecureEncryptionAvailable()) {
     throw new Error('safe-storage-unavailable');
   }
   const filePath = resolvePath(filename);
@@ -21,7 +35,7 @@ export const readEncryptedJson = <T>(filename: string): T | null => {
   const filePath = resolvePath(filename);
   try {
     const buf = fs.readFileSync(filePath);
-    if (!safeStorage.isEncryptionAvailable()) return null;
+    if (!isSecureEncryptionAvailable()) return null;
     return JSON.parse(safeStorage.decryptString(buf)) as T;
   } catch (err) {
     const code = (err as NodeJS.ErrnoException).code;

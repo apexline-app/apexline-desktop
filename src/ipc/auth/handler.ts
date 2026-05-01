@@ -88,20 +88,30 @@ const clearSession = () => {
   broadcast(publicState(state));
 };
 
-const refreshAccessToken = async () => {
-  if (state.status !== 'authenticated') {
-    throw new Error('unauthenticated');
-  }
-  const result = await postOauthToken({
-    grant_type: 'refresh_token',
-    refresh_token: state.refreshToken,
-    client_id: oauthClientId(),
+let refreshInFlight: Promise<void> | null = null;
+
+const refreshAccessToken = () => {
+  if (refreshInFlight) return refreshInFlight;
+
+  refreshInFlight = (async () => {
+    if (state.status !== 'authenticated') {
+      throw new Error('unauthenticated');
+    }
+    const result = await postOauthToken({
+      grant_type: 'refresh_token',
+      refresh_token: state.refreshToken,
+      client_id: oauthClientId(),
+    });
+    if (!result.ok) {
+      clearSession();
+      throw new Error('refresh-expired');
+    }
+    await persistSession(result.tokens);
+  })().finally(() => {
+    refreshInFlight = null;
   });
-  if (!result.ok) {
-    clearSession();
-    throw new Error('refresh-expired');
-  }
-  await persistSession(result.tokens);
+
+  return refreshInFlight;
 };
 
 const startLoopbackServer = () =>
@@ -178,18 +188,29 @@ const handleVerify2fa = async ({ otp }: { otp: string }) => {
   if (state.status !== 'awaiting-2fa') {
     throw new Error('unauthenticated');
   }
-  const tokens = await apiJsonRaw<OauthTokenResponse>(
-    API_PATHS.AUTH_2FA_VERIFY,
-    {
-      method: 'POST',
-      body: JSON.stringify({
-        challenge_token: state.challengeToken,
-        otp_attempt: otp,
-      }),
-    },
-  );
-  await persistSession(tokens);
-  return { ok: true as const };
+  try {
+    const tokens = await apiJsonRaw<OauthTokenResponse>(
+      API_PATHS.AUTH_2FA_VERIFY,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          challenge_token: state.challengeToken,
+          otp_attempt: otp,
+        }),
+      },
+    );
+    await persistSession(tokens);
+    return { ok: true as const };
+  } catch (err) {
+    // challenge_expired ⇒ challenge_token stale, user must re-sign-in.
+    // Reset state so the renderer guard navigates back to /sign-in instead
+    // of looping on /2fa-challenge with a dead token. invalid_otp leaves
+    // the awaiting-2fa state intact so user can retry.
+    if (err instanceof Error && err.message === 'challenge_expired') {
+      clearSession();
+    }
+    throw err;
+  }
 };
 
 const handleSignUp = async (input: {
