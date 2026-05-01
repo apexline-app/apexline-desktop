@@ -14,6 +14,7 @@ export type ApiClientDeps = {
 let instance: HttpClient | null = null;
 
 export const initApiClient = (deps: ApiClientDeps): HttpClient => {
+  if (instance) throw new Error('api-client-already-initialized');
   instance = createHttpClient({
     baseUrl: apiBase(),
     appVersion: app.getVersion(),
