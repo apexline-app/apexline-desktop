@@ -6,9 +6,9 @@ import {
   SignInInputSchema,
   SignUpInputSchema,
   type User,
-  UserSchema,
   Verify2faInputSchema,
 } from '@/features/auth/contracts';
+import { fetchMe, signUpUser } from '@/features/auth/main/api';
 import {
   deleteEncryptedJson,
   readEncryptedJson,
@@ -23,7 +23,7 @@ import {
   postOauthToken,
   revokeToken,
 } from '@/shared/api/auth-fetch';
-import { getApiClient, initApiClient } from '@/shared/api/http-client';
+import { initApiClient } from '@/shared/api/http-client';
 import { withValidation } from '@/shared/ipc/validation';
 
 const REFRESH_LEEWAY_MS = 60_000;
@@ -63,11 +63,7 @@ const broadcast = (next: AuthState) => {
 };
 
 const persistSession = async (tokens: OauthTokenResponse) => {
-  const [user, error] = await getApiClient().get(API_PATHS.ME, {
-    schema: UserSchema,
-    headers: { Authorization: `Bearer ${tokens.access_token}` },
-  });
-  if (error) throw new Error(error.reason);
+  const user = await fetchMe(tokens.access_token);
   state = {
     status: 'authenticated',
     user,
@@ -223,12 +219,7 @@ const handleSignUp = async (input: {
   password: string;
   nickname: string;
 }) => {
-  const [, error] = await getApiClient().post(
-    API_PATHS.USERS,
-    { user: input },
-    { schema: UserSchema },
-  );
-  if (error) throw new Error(error.reason);
+  await signUpUser(input);
   return { ok: true as const };
 };
 

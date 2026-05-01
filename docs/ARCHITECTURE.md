@@ -44,7 +44,8 @@ features/<domain>/
 │   ├── <endpoint>.ts       # one file per endpoint (e.g. sign-in.ts, sign-up.ts)
 │   └── commands.ts         # <X>Commands + <X>Events maps (aggregates types)
 ├── main/                   # main-process only (ipcMain handlers, services)
-│   └── handler.ts
+│   ├── handler.ts          # IPC registration + state orchestration
+│   └── api.ts              # HTTP wrappers — domain-named functions over getApiClient()
 ├── model/                  # renderer client state (Zustand stores)
 │   ├── use-<x>-store.ts
 │   └── use-<x>-store.test.ts
