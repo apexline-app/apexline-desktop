@@ -92,8 +92,9 @@
     "vitest": "4.1.5"
   },
   "dependencies": {
-    "@apexline-app/apr": "0.1.2",
+    "@apexline-app/apr": "0.2.0",
     "@apexline-app/http-toolkit-js": "0.1.2",
+    "@hookform/resolvers": "5.2.2",
     "@sentry/electron": "7.13.0",
     "@tanstack/react-query": "5.100.7",
     "@tanstack/react-router": "1.169.1",
@@ -102,6 +103,7 @@
     "openid-client": "6.8.4",
     "react": "19.2.5",
     "react-dom": "19.2.5",
+    "react-hook-form": "7.74.0",
     "zod": "4.4.1",
     "zustand": "5.0.12"
   },

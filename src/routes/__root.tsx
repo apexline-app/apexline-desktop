@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 
+import { LogoLockup } from '@apexline-app/apr';
 import {
   createRootRoute,
   Link,
@@ -136,9 +137,7 @@ function TopBar() {
         } as React.CSSProperties
       }
     >
-      <span className='font-display text-sm tracking-wide text-brand-primary'>
-        Apexline
-      </span>
+      <LogoLockup size={14} monochrome />
     </header>
   );
 }
