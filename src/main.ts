@@ -55,8 +55,9 @@ const createWindow = () => {
     );
   }
 
-  // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL && !process.env.PLAYWRIGHT) {
+    mainWindow.webContents.openDevTools();
+  }
 };
 
 // This method will be called when Electron has finished

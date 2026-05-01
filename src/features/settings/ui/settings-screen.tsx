@@ -8,7 +8,11 @@ type SetInput =
 
 export function SettingsScreen() {
   const { data: settings } = useSettingsQuery();
-  const { mutate: setSettings, error: saveError } = useSettingsMutation();
+  const {
+    mutate: setSettings,
+    error: saveError,
+    isPending,
+  } = useSettingsMutation();
 
   if (!settings) {
     return (
@@ -16,7 +20,10 @@ export function SettingsScreen() {
     );
   }
 
-  const onSet = (input: SetInput) => setSettings(input);
+  const onSet = (input: SetInput) => {
+    if (isPending) return;
+    setSettings(input);
+  };
 
   return (
     <section className='flex max-w-xl flex-col gap-6'>

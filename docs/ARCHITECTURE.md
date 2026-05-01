@@ -415,66 +415,9 @@ Server state (anything fetched via IPC from `apexline-api` / iRacing SDK) lives 
 - ❌ Don't expose `httpClient` to renderer — it's a main-side singleton
 - ❌ Don't hold access tokens in renderer state (Zustand or component state) — main proxies everything
 
-### Setup
-
-- `src/shared/api/query-client.ts` — `createQueryClient()` factory with desktop-tuned defaults (`staleTime: 30s`, `refetchOnWindowFocus: false`, `refetchOnReconnect: true`, `retry: 1`).
-- `src/app.tsx` — `<QueryClientProvider>` wraps `<RouterProvider>`. `<ReactQueryDevtools>` mounted in dev only via `import.meta.env.DEV`.
-
-### Per-feature `api/` segment
-
-Queries and mutations live in `features/<x>/api/`:
-
-```text
-features/auth/api/
-├── use-me-query.ts          # GET /api/v1/me — useQuery wrapper
-└── use-update-profile.ts    # PATCH /api/v1/me — useMutation wrapper
-```
-
-Anatomy of a query (post-toolkit-js):
-
-```ts
-// features/auth/api/use-me-query.ts
-import { useQuery } from '@tanstack/react-query';
-
-import type { User } from '@/features/auth/contracts';
-// toolkit-js
-import { fromResult } from '@/shared/api/from-result';
-import { httpClient } from '@/shared/api/http-client';
-
-// tuple → throw
-
-export const meQueryKey = ['me'] as const;
-
-export const useMeQuery = () =>
-  useQuery({
-    queryKey: meQueryKey,
-    queryFn: () => fromResult(httpClient.get<User>('/api/v1/me')),
-  });
-```
-
-The `fromResult` helper bridges toolkit-js (`Result<T>` tuple) to TanStack Query (which expects `Promise<T>` that throws on error). Toolkit-js stays universal — works in main process, Next.js servers, browsers — and rendererwrapsits return shape via this 3-line helper.
-
-### Query key conventions
-
-- **Tuple-first**, descriptive: `['me']`, `['series', { tracked: true }]`, `['series', seriesPid, 'schedule']`
-- Per-feature constants: `meQueryKey`, `seriesListQueryKey(filters)` — never inline literals scattered across UI
-- Hierarchical for invalidation: `queryClient.invalidateQueries({ queryKey: ['series'] })` invalidates all series queries
-
-### Mutations
-
-- `useMutation` per write operation; `onSuccess` invalidates relevant query keys
-- `mutationFn` throws on error (same as queryFn — wrap toolkit Result via `fromResult`)
-- Optimistic updates only when UX demands it (e.g. settings toggle); for most writes, refetch on success is fine
-
-### Don'ts
-
-- ❌ Don't use TanStack Query for IPC commands (`auth:sign-in`, `settings:set`) — those go through `window.api.invoke` directly. Query is for **HTTP server state**, not main-process IPC.
-- ❌ Don't put fetch logic outside `features/<x>/api/`. UI components import the hook (`useMeQuery()`), never call `httpClient.get` directly.
-- ❌ Don't mirror server state into Zustand. If it's fetched from API, it lives in Query cache only.
-
 ## How to add a new feature
 
-1. **Create** `src/features/<name>/{index.ts, contracts.ts}` minimum
+1. **Create** `src/features/<name>/{index.ts, contracts/}` minimum (`commands.ts` + endpoint/entity files; flat `contracts.ts` only for tiny features per "When to keep contracts flat" rule)
 2. **Add IPC** if needed: `main/handler.ts` + register call in `src/main.ts` (direct import)
 3. **Add client state** if needed: `model/use-<name>-store.ts` (Zustand) or `model/use-<name>.ts` (custom hook)
 4. **Add server queries** if needed: `api/use-<name>-query.ts` (TanStack Query) — see "Data fetching" section
