@@ -19,7 +19,9 @@ test('main window opens on sign-in route when unauthenticated', async () => {
 
   await expect(window.getByPlaceholder('email')).toBeVisible();
   await expect(window.getByPlaceholder('password')).toBeVisible();
-  await expect(window.getByRole('button', { name: 'Sign in' })).toBeVisible();
+  await expect(
+    window.getByRole('button', { name: 'Sign in', exact: true }),
+  ).toBeVisible();
   await expect(
     window.getByRole('button', { name: 'Sign in with Google' }),
   ).toBeVisible();
