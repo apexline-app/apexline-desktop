@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **`@apexline-app/http-toolkit-js@0.1.2` migration** — replaced ad-hoc envelope fetcher in `src/shared/api/auth-fetch.ts` with the toolkit's `createHttpClient`:
+  - New `src/shared/api/http-client.ts` — module-level singleton with `initApiClient({ getToken, onUnauthorized })` and `getApiClient()`. Auth handler owns `init` (it holds the token state); every other feature pulls the shared client via `getApiClient()`.
+  - `features/auth/main/handler.ts` calls `initApiClient` in `registerAuthHandlers` with token/refresh callbacks bound to local auth state. Envelope unwrapping, snake/camel boundary, retries (`502/503/504` + `429 Retry-After`), `X-Request-Id`, `X-AppVersion`, and 401-refresh are owned by the toolkit.
+  - New `features/auth/main/api.ts` — domain-named HTTP wrappers (`fetchMe`, `signUpUser`) over `getApiClient()`. Handler stays focused on state + IPC; toolkit boilerplate (schemas, headers, tuple unpacking) is hidden behind named functions. Pattern generalized: every feature with API endpoints exposes a `main/api.ts` alongside `main/handler.ts`.
+  - `apiJson` / `apiJsonRaw` helpers removed from `auth-fetch.ts`. The 2FA verify call (raw, non-enveloped Doorkeeper-style response) is inlined with `fetchWithTimeout` in `handleVerify2fa`. OAuth helpers (`postOauthToken`, `revokeToken`, `apiBase`, `oauthClientId`, `fetchWithTimeout`) stay — they target raw `application/x-www-form-urlencoded` endpoints that the toolkit doesn't model.
+  - `src/shared/api/envelope.ts` re-exports envelope types from `@apexline-app/http-toolkit-js/types` (`StandardResponse`, `ErrorMeta`, `ValidationErrorMeta`); `successResponse` / `errorResponse` factories kept for MSW handlers.
+  - No renderer changes — IPC-first pattern unchanged; the toolkit lives only in main.
+
 ### Added
 
 - **Playwright + first Electron e2e smoke**:
