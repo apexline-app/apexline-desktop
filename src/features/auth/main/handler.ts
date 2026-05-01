@@ -234,40 +234,46 @@ const handleStartGoogleLogin = async () => {
     return { ok: true as const };
   }
 
-  const { generators, Issuer } = await import('openid-client');
-  const issuer = await Issuer.discover(apiBase());
-  const client = new issuer.Client({
-    client_id: oauthClientId(),
-    redirect_uris: ['http://127.0.0.1'],
-    response_types: ['code'],
-    token_endpoint_auth_method: 'none',
-  });
+  const oidc = await import('openid-client');
+  const config = await oidc.discovery(
+    new URL(apiBase()),
+    oauthClientId(),
+    undefined,
+    oidc.None(),
+  );
 
-  const codeVerifier = generators.codeVerifier();
-  const csrfState = generators.state();
+  const codeVerifier = oidc.randomPKCECodeVerifier();
+  const codeChallenge = await oidc.calculatePKCECodeChallenge(codeVerifier);
+  const csrfState = oidc.randomState();
   const { server, port } = await startLoopbackServer();
   const redirectUri = `http://127.0.0.1:${port}/callback`;
 
-  const authUrl = client.authorizationUrl({
+  const authUrl = oidc.buildAuthorizationUrl(config, {
+    redirect_uri: redirectUri,
     scope: 'profile',
-    code_challenge: generators.codeChallenge(codeVerifier),
+    code_challenge: codeChallenge,
     code_challenge_method: 'S256',
     state: csrfState,
-    redirect_uri: redirectUri,
   });
 
-  await shell.openExternal(authUrl);
+  await shell.openExternal(authUrl.href);
   try {
     const params = await waitForCallback(server, csrfState);
-    const tokenSet = await client.callback(
-      redirectUri,
-      Object.fromEntries(params),
-      { code_verifier: codeVerifier, state: csrfState },
-    );
+    const callbackUrl = new URL(redirectUri);
+    for (const [key, value] of params) {
+      callbackUrl.searchParams.set(key, value);
+    }
+    const tokens = await oidc.authorizationCodeGrant(config, callbackUrl, {
+      pkceCodeVerifier: codeVerifier,
+      expectedState: csrfState,
+    });
+    if (!tokens.refresh_token) {
+      throw new Error('google-login-missing-refresh-token');
+    }
     await persistSession({
-      access_token: tokenSet.access_token!,
-      refresh_token: tokenSet.refresh_token!,
-      expires_in: tokenSet.expires_in ?? 3600,
+      access_token: tokens.access_token,
+      refresh_token: tokens.refresh_token,
+      expires_in: tokens.expires_in ?? 3600,
     });
     return { ok: true as const };
   } finally {
