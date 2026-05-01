@@ -1,31 +1,22 @@
-export type SuccessEnvelope<T> = {
-  result: 'success';
-  data: T;
-  _meta: Record<string, unknown> | null;
-};
+import type {
+  ErrorMeta,
+  ErrorResponse,
+  StandardResponse,
+  ValidationErrorMeta,
+  ValidationErrorResponse,
+} from '@apexline-app/http-toolkit-js/types';
 
-export type ErrorMeta = {
-  message: string | null;
-  code: number;
-  reason: string;
-  errors?: Record<string, string[]>;
-};
-
-export type ErrorEnvelope = {
-  result: 'error';
-  data: null;
-  _meta: ErrorMeta;
-};
-
+export type SuccessEnvelope<T> = StandardResponse<T, Record<string, unknown>>;
+export type ErrorEnvelope = ErrorResponse;
 export type Envelope<T> = SuccessEnvelope<T> | ErrorEnvelope;
 
-export function successResponse<T>(
+export type { ErrorMeta, ValidationErrorMeta, ValidationErrorResponse };
+
+export const successResponse = <T>(
   data: T,
   meta: SuccessEnvelope<T>['_meta'] = null,
-): SuccessEnvelope<T> {
-  return { result: 'success', data, _meta: meta };
-}
+): SuccessEnvelope<T> => ({ result: 'success', data, _meta: meta });
 
-export function errorResponse(meta: ErrorMeta): ErrorEnvelope {
-  return { result: 'error', data: null, _meta: meta };
-}
+export const errorResponse = (
+  meta: ErrorMeta | ValidationErrorMeta,
+): ErrorResponse => ({ result: 'error', data: null, _meta: meta });

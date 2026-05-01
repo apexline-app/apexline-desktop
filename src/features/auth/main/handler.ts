@@ -6,6 +6,7 @@ import {
   SignInInputSchema,
   SignUpInputSchema,
   type User,
+  UserSchema,
   Verify2faInputSchema,
 } from '@/features/auth/contracts';
 import {
@@ -16,13 +17,13 @@ import {
 import { API_PATHS } from '@/shared/api/api-paths';
 import {
   apiBase,
-  apiJson,
-  apiJsonRaw,
+  fetchWithTimeout,
   oauthClientId,
   type OauthTokenResponse,
   postOauthToken,
   revokeToken,
 } from '@/shared/api/auth-fetch';
+import { getApiClient, initApiClient } from '@/shared/api/http-client';
 import { withValidation } from '@/shared/ipc/validation';
 
 const REFRESH_LEEWAY_MS = 60_000;
@@ -62,10 +63,11 @@ const broadcast = (next: AuthState) => {
 };
 
 const persistSession = async (tokens: OauthTokenResponse) => {
-  const user = await apiJson<User>(API_PATHS.ME, {
-    method: 'GET',
-    accessToken: tokens.access_token,
+  const [user, error] = await getApiClient().get(API_PATHS.ME, {
+    schema: UserSchema,
+    headers: { Authorization: `Bearer ${tokens.access_token}` },
   });
+  if (error) throw new Error(error.reason);
   state = {
     status: 'authenticated',
     user,
@@ -187,29 +189,33 @@ const handleVerify2fa = async ({ otp }: { otp: string }) => {
   if (state.status !== 'awaiting-2fa') {
     throw new Error('unauthenticated');
   }
-  try {
-    const tokens = await apiJsonRaw<OauthTokenResponse>(
-      API_PATHS.AUTH_2FA_VERIFY,
-      {
-        method: 'POST',
-        body: JSON.stringify({
-          challenge_token: state.challengeToken,
-          otp_attempt: otp,
-        }),
-      },
-    );
-    await persistSession(tokens);
-    return { ok: true as const };
-  } catch (err) {
+  const res = await fetchWithTimeout(
+    `${apiBase()}${API_PATHS.AUTH_2FA_VERIFY}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        challenge_token: state.challengeToken,
+        otp_attempt: otp,
+      }),
+    },
+  );
+  const body = (await res.json().catch(() => ({}))) as
+    | OauthTokenResponse
+    | { error?: string };
+
+  if (!res.ok) {
+    const reason = (body as { error?: string }).error ?? 'request_failed';
     // challenge_expired ⇒ challenge_token stale, user must re-sign-in.
     // Reset state so the renderer guard navigates back to /sign-in instead
     // of looping on /2fa-challenge with a dead token. invalid_otp leaves
     // the awaiting-2fa state intact so user can retry.
-    if (err instanceof Error && err.message === 'challenge_expired') {
-      clearSession();
-    }
-    throw err;
+    if (reason === 'challenge_expired') clearSession();
+    throw new Error(reason);
   }
+
+  await persistSession(body as OauthTokenResponse);
+  return { ok: true as const };
 };
 
 const handleSignUp = async (input: {
@@ -217,10 +223,12 @@ const handleSignUp = async (input: {
   password: string;
   nickname: string;
 }) => {
-  await apiJson<User>(API_PATHS.USERS, {
-    method: 'POST',
-    body: JSON.stringify({ user: input }),
-  });
+  const [, error] = await getApiClient().post(
+    API_PATHS.USERS,
+    { user: input },
+    { schema: UserSchema },
+  );
+  if (error) throw new Error(error.reason);
   return { ok: true as const };
 };
 
@@ -311,6 +319,20 @@ const bootstrap = async () => {
 };
 
 export const registerAuthHandlers = () => {
+  initApiClient({
+    getToken: () =>
+      state.status === 'authenticated' ? state.accessToken : null,
+    onUnauthorized: async () => {
+      if (state.status !== 'authenticated') return null;
+      try {
+        await refreshAccessToken();
+      } catch {
+        return null;
+      }
+      return state.status === 'authenticated' ? state.accessToken : null;
+    },
+  });
+
   ipcMain.handle(
     'auth:sign-in',
     withValidation(SignInInputSchema, handleSignIn),

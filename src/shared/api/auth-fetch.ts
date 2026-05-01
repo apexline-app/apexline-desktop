@@ -7,7 +7,7 @@ export const apiBase = () =>
 
 export const oauthClientId = () => process.env.OAUTH_CLIENT_ID ?? 'apx_desktop';
 
-const fetchWithTimeout = async (input: string, init: RequestInit) => {
+export const fetchWithTimeout = async (input: string, init: RequestInit) => {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), AUTH_FETCH_TIMEOUT_MS);
   try {
@@ -34,9 +34,9 @@ export type OauthTokenResult =
   | { ok: false; status: number; error: string; challengeToken?: string };
 
 /**
- * POST /oauth/token — Doorkeeper RFC response (NIE envelope).
- * Zwraca discriminated union zamiast throwowania, bo 401 z `requires_2fa`
- * to legalna odpowiedź którą caller musi obsłużyć inaczej niż błąd.
+ * POST /oauth/token — Doorkeeper RFC response (NOT enveloped).
+ * Returns a discriminated union instead of throwing — 401 with `requires_2fa`
+ * is a legitimate response that callers must handle differently than an error.
  */
 export const postOauthToken = async (
   params: Record<string, string>,
@@ -70,61 +70,4 @@ export const revokeToken = async (refreshToken: string) => {
       client_id: oauthClientId(),
     }),
   });
-};
-
-type EnvelopeResponse<T> = { data: T };
-type ErrorBody = { error?: string; _meta?: { reason?: string } };
-
-type RequestInitWithAuth = RequestInit & { accessToken?: string };
-
-const buildHeaders = (init?: RequestInitWithAuth) => {
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-    ...((init?.headers as Record<string, string>) ?? {}),
-  };
-  if (init?.accessToken) {
-    headers.Authorization = `Bearer ${init.accessToken}`;
-  }
-  return headers;
-};
-
-const extractReason = (body: ErrorBody) =>
-  body.error ?? body._meta?.reason ?? 'request_failed';
-
-/**
- * Apexline API endpoint with envelope shape `{ data, _meta }`.
- * Throws Error(reason) on non-2xx. Returns parsed `data`.
- *
- * After toolkit-js install: replace with `httpClient.{get,post}(path, ...)`.
- */
-export const apiJson = async <T>(
-  path: string,
-  init?: RequestInitWithAuth,
-): Promise<T> => {
-  const res = await fetchWithTimeout(`${apiBase()}${path}`, {
-    ...init,
-    headers: buildHeaders(init),
-  });
-  const body = (await res.json().catch(() => ({}))) as
-    | EnvelopeResponse<T>
-    | ErrorBody;
-  if (!res.ok) throw new Error(extractReason(body as ErrorBody));
-  return (body as EnvelopeResponse<T>).data;
-};
-
-/**
- * Non-envelope endpoint (Doorkeeper-style raw response, e.g. token endpoints).
- * Throws Error(reason) on non-2xx. Returns whole body.
- */
-export const apiJsonRaw = async <T>(
-  path: string,
-  init?: RequestInitWithAuth,
-): Promise<T> => {
-  const res = await fetchWithTimeout(`${apiBase()}${path}`, {
-    ...init,
-    headers: buildHeaders(init),
-  });
-  const body = (await res.json().catch(() => ({}))) as T | ErrorBody;
-  if (!res.ok) throw new Error(extractReason(body as ErrorBody));
-  return body as T;
 };

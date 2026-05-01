@@ -66,7 +66,7 @@ Real example: see `src/features/auth/`.
 
 ```text
 shared/
-├── api/                    # auth-fetch, api-paths, api-mode, envelope helpers
+├── api/                    # http-client (toolkit singleton: initApiClient/getApiClient), auth-fetch (OAuth raw), api-paths, api-mode, envelope re-exports
 ├── ipc/                    # validation (Zod helper), types (Commands/Events union)
 ├── lib/                    # universal utils (will fill out as needed)
 └── types/                  # cross-feature TS types (will fill out as needed)
