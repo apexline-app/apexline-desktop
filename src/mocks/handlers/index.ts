@@ -1,4 +1,5 @@
-import { authHandlers } from '@/mocks/handlers/auth';
 import { meHandlers } from '@/mocks/handlers/me';
+import { oauthHandlers } from '@/mocks/handlers/oauth';
+import { usersHandlers } from '@/mocks/handlers/users';
 
-export const handlers = [...authHandlers, ...meHandlers];
+export const handlers = [...oauthHandlers, ...usersHandlers, ...meHandlers];

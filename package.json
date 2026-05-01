@@ -96,9 +96,11 @@
     "@tanstack/react-router": "1.168.24",
     "electron-squirrel-startup": "1.0.1",
     "electron-window-state": "5.0.3",
+    "openid-client": "5.7.1",
     "react": "19.2.5",
     "react-dom": "19.2.5",
-    "zod": "4.3.6"
+    "zod": "4.3.6",
+    "zustand": "5.0.12"
   },
   "msw": {
     "workerDirectory": [
