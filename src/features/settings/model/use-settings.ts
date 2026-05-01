@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 
-import type { Settings, SettingsKey } from '@/ipc/settings/types';
+import type { Settings, SettingsKey } from '@/features/settings/contracts';
 
 type SetInput =
   | { key: 'theme'; value: Settings['theme'] }

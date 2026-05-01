@@ -1,14 +1,13 @@
 import { BrowserWindow, ipcMain } from 'electron';
 
-import { withValidation } from '@/ipc/validation';
-import { readJson, writeJson } from '@/main/file-storage';
-
 import {
   type Settings,
   SettingsGetInputSchema,
   SettingsSchema,
   SettingsSetInputSchema,
-} from './types';
+} from '@/features/settings/contracts';
+import { readJson, writeJson } from '@/platform/storage/file-storage';
+import { withValidation } from '@/shared/ipc/validation';
 
 const SETTINGS_FILE = 'settings.json';
 

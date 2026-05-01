@@ -1,6 +1,6 @@
 import { http, HttpResponse } from 'msw';
 
-import { MOCK_TOKENS } from '@/mocks/fixtures/user';
+import { MOCK_TOKENS } from '@/features/auth/mocks/fixtures/user';
 
 const TWO_FA_USER = '2fa@apexline.test';
 const VALID_PASSWORD = 'dev';

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import type { LapSample } from '@/ipc/telemetry/types';
+import type { LapSample } from '@/features/telemetry/contracts';
 
 type TelemetryStatus = 'idle' | 'connected' | 'disconnected' | 'error';
 

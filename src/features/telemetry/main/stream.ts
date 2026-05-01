@@ -1,6 +1,9 @@
 import { ipcMain, type MessagePortMain } from 'electron';
 
-import { TELEMETRY_OPEN_CHANNEL, type TelemetryMessage } from './types';
+import {
+  TELEMETRY_OPEN_CHANNEL,
+  type TelemetryMessage,
+} from '@/features/telemetry/contracts';
 
 type Disposer = () => void;
 

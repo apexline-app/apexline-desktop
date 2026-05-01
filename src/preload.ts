@@ -3,8 +3,8 @@ import { contextBridge, ipcRenderer } from 'electron';
 import {
   TELEMETRY_OPEN_CHANNEL,
   type TelemetryMessage,
-} from '@/ipc/telemetry/types';
-import type { Commands, Events } from '@/ipc/types';
+} from '@/features/telemetry/contracts';
+import type { Commands, Events } from '@/shared/ipc/types';
 
 const api = {
   invoke: <K extends keyof Commands>(

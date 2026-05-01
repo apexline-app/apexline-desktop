@@ -1,4 +1,4 @@
-import { z } from '@/ipc/validation';
+import { z } from '@/shared/ipc/validation';
 
 export const SettingsSchema = z.object({
   theme: z.enum(['apexline', 'system']).default('apexline'),

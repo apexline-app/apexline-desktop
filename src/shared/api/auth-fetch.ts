@@ -1,4 +1,4 @@
-import { API_PATHS } from '@/lib/api-paths';
+import { API_PATHS } from '@/shared/api/api-paths';
 
 const AUTH_FETCH_TIMEOUT_MS = 15_000;
 

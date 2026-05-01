@@ -1,8 +1,19 @@
 import { BrowserWindow, ipcMain, shell } from 'electron';
 import http from 'node:http';
 
-import { withValidation } from '@/ipc/validation';
-import { API_PATHS } from '@/lib/api-paths';
+import {
+  type AuthState,
+  SignInInputSchema,
+  SignUpInputSchema,
+  type User,
+  Verify2faInputSchema,
+} from '@/features/auth/contracts';
+import {
+  deleteEncryptedJson,
+  readEncryptedJson,
+  writeEncryptedJson,
+} from '@/platform/storage/encrypted-storage';
+import { API_PATHS } from '@/shared/api/api-paths';
 import {
   apiBase,
   apiJson,
@@ -11,20 +22,8 @@ import {
   type OauthTokenResponse,
   postOauthToken,
   revokeToken,
-} from '@/lib/auth-fetch';
-import {
-  deleteEncryptedJson,
-  readEncryptedJson,
-  writeEncryptedJson,
-} from '@/main/encrypted-storage';
-
-import {
-  type AuthState,
-  SignInInputSchema,
-  SignUpInputSchema,
-  type User,
-  Verify2faInputSchema,
-} from './types';
+} from '@/shared/api/auth-fetch';
+import { withValidation } from '@/shared/ipc/validation';
 
 const REFRESH_LEEWAY_MS = 60_000;
 const GOOGLE_CALLBACK_TIMEOUT_MS = 120_000;

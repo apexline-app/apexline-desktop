@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
-import { errorResponse, successResponse } from '@/mocks/envelope';
-import { mockUser } from '@/mocks/fixtures/user';
+import { mockUser } from '@/features/auth/mocks/fixtures/user';
+import { errorResponse, successResponse } from '@/shared/api/envelope';
 
 export const meHandlers = [
   http.get('*/api/v1/me', ({ request }) => {
