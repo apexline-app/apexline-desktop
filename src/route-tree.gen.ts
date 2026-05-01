@@ -10,13 +10,26 @@
 
 import { Route as rootRouteImport } from './routes/__root';
 import { Route as WhatsNewRouteImport } from './routes/whats-new';
+import { Route as SignUpRouteImport } from './routes/sign-up';
+import { Route as SignInRouteImport } from './routes/sign-in';
 import { Route as SettingsRouteImport } from './routes/settings';
 import { Route as OnboardingRouteImport } from './routes/onboarding';
+import { Route as R2faChallengeRouteImport } from './routes/2fa-challenge';
 import { Route as IndexRouteImport } from './routes/index';
 
 const WhatsNewRoute = WhatsNewRouteImport.update({
   id: '/whats-new',
   path: '/whats-new',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const SignUpRoute = SignUpRouteImport.update({
+  id: '/sign-up',
+  path: '/sign-up',
+  getParentRoute: () => rootRouteImport,
+} as any);
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
   getParentRoute: () => rootRouteImport,
 } as any);
 const SettingsRoute = SettingsRouteImport.update({
@@ -29,6 +42,11 @@ const OnboardingRoute = OnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any);
+const R2faChallengeRoute = R2faChallengeRouteImport.update({
+  id: '/2fa-challenge',
+  path: '/2fa-challenge',
+  getParentRoute: () => rootRouteImport,
+} as any);
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,35 +55,69 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute;
+  '/2fa-challenge': typeof R2faChallengeRoute;
   '/onboarding': typeof OnboardingRoute;
   '/settings': typeof SettingsRoute;
+  '/sign-in': typeof SignInRoute;
+  '/sign-up': typeof SignUpRoute;
   '/whats-new': typeof WhatsNewRoute;
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute;
+  '/2fa-challenge': typeof R2faChallengeRoute;
   '/onboarding': typeof OnboardingRoute;
   '/settings': typeof SettingsRoute;
+  '/sign-in': typeof SignInRoute;
+  '/sign-up': typeof SignUpRoute;
   '/whats-new': typeof WhatsNewRoute;
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport;
   '/': typeof IndexRoute;
+  '/2fa-challenge': typeof R2faChallengeRoute;
   '/onboarding': typeof OnboardingRoute;
   '/settings': typeof SettingsRoute;
+  '/sign-in': typeof SignInRoute;
+  '/sign-up': typeof SignUpRoute;
   '/whats-new': typeof WhatsNewRoute;
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath;
-  fullPaths: '/' | '/onboarding' | '/settings' | '/whats-new';
+  fullPaths:
+    | '/'
+    | '/2fa-challenge'
+    | '/onboarding'
+    | '/settings'
+    | '/sign-in'
+    | '/sign-up'
+    | '/whats-new';
   fileRoutesByTo: FileRoutesByTo;
-  to: '/' | '/onboarding' | '/settings' | '/whats-new';
-  id: '__root__' | '/' | '/onboarding' | '/settings' | '/whats-new';
+  to:
+    | '/'
+    | '/2fa-challenge'
+    | '/onboarding'
+    | '/settings'
+    | '/sign-in'
+    | '/sign-up'
+    | '/whats-new';
+  id:
+    | '__root__'
+    | '/'
+    | '/2fa-challenge'
+    | '/onboarding'
+    | '/settings'
+    | '/sign-in'
+    | '/sign-up'
+    | '/whats-new';
   fileRoutesById: FileRoutesById;
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute;
+  R2faChallengeRoute: typeof R2faChallengeRoute;
   OnboardingRoute: typeof OnboardingRoute;
   SettingsRoute: typeof SettingsRoute;
+  SignInRoute: typeof SignInRoute;
+  SignUpRoute: typeof SignUpRoute;
   WhatsNewRoute: typeof WhatsNewRoute;
 }
 
@@ -76,6 +128,20 @@ declare module '@tanstack/react-router' {
       path: '/whats-new';
       fullPath: '/whats-new';
       preLoaderRoute: typeof WhatsNewRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/sign-up': {
+      id: '/sign-up';
+      path: '/sign-up';
+      fullPath: '/sign-up';
+      preLoaderRoute: typeof SignUpRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
+    '/sign-in': {
+      id: '/sign-in';
+      path: '/sign-in';
+      fullPath: '/sign-in';
+      preLoaderRoute: typeof SignInRouteImport;
       parentRoute: typeof rootRouteImport;
     };
     '/settings': {
@@ -92,6 +158,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingRouteImport;
       parentRoute: typeof rootRouteImport;
     };
+    '/2fa-challenge': {
+      id: '/2fa-challenge';
+      path: '/2fa-challenge';
+      fullPath: '/2fa-challenge';
+      preLoaderRoute: typeof R2faChallengeRouteImport;
+      parentRoute: typeof rootRouteImport;
+    };
     '/': {
       id: '/';
       path: '/';
@@ -104,8 +177,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  R2faChallengeRoute: R2faChallengeRoute,
   OnboardingRoute: OnboardingRoute,
   SettingsRoute: SettingsRoute,
+  SignInRoute: SignInRoute,
+  SignUpRoute: SignUpRoute,
   WhatsNewRoute: WhatsNewRoute,
 };
 export const routeTree = rootRouteImport

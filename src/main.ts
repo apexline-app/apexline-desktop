@@ -3,6 +3,7 @@ import started from 'electron-squirrel-startup';
 import windowStateKeeper from 'electron-window-state';
 import path from 'node:path';
 
+import { registerAuthHandlers } from '@/ipc/auth/handler';
 import { registerSettingsHandlers } from '@/ipc/settings/handler';
 import { registerTelemetryStream } from '@/ipc/telemetry/stream';
 import { initSentryMain } from '@/sentry/init-main';
@@ -61,9 +62,18 @@ const createWindow = () => {
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', () => {
+const startMockServer = async () => {
+  if (process.env.VITE_API_MODE !== 'mock') return;
+  const { server } = await import('@/mocks/node');
+  server.listen({ onUnhandledRequest: 'bypass' });
+  console.info('[msw] main process mock server started');
+};
+
+app.on('ready', async () => {
+  await startMockServer();
   registerSettingsHandlers();
   registerTelemetryStream();
+  registerAuthHandlers();
   createWindow();
 });
 

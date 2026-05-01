@@ -1,5 +1,5 @@
 export type MockUser = {
-  id: string;
+  pid: string;
   email: string;
   nickname: string;
   iracing_customer_id: number | null;
@@ -9,7 +9,7 @@ export type MockUser = {
 };
 
 export const mockUser: MockUser = {
-  id: 'user_test_001',
+  pid: 'usr_test_001',
   email: 'daniel@apexline.test',
   nickname: 'daniel',
   iracing_customer_id: null,
@@ -21,4 +21,6 @@ export const mockUser: MockUser = {
 export const MOCK_TOKENS = {
   access_token: 'mock.jwt.access',
   refresh_token: 'mock.jwt.refresh',
+  expires_in: 3600,
+  token_type: 'Bearer',
 } as const;

@@ -1,4 +1,16 @@
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { useEffect } from 'react';
+
+import {
+  createRootRoute,
+  Link,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router';
+
+import { useAuthBootstrap, useAuthStore } from '@/stores/use-auth-store';
+
+const PUBLIC_ROUTES = ['/sign-in', '/sign-up', '/2fa-challenge'] as const;
 
 type NavItem =
   | { to: '/' | '/onboarding' | '/settings' | '/whats-new'; label: string }
@@ -17,6 +29,54 @@ export const Route = createRootRoute({
 });
 
 function AppShell() {
+  useAuthBootstrap();
+  const status = useAuthStore(s => s.status);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isPublic = (PUBLIC_ROUTES as ReadonlyArray<string>).includes(
+    location.pathname,
+  );
+
+  useEffect(() => {
+    if (status === 'loading') return;
+    if (status === 'unauthenticated' && !isPublic) {
+      void navigate({ to: '/sign-in' });
+    } else if (
+      status === 'awaiting-2fa' &&
+      location.pathname !== '/2fa-challenge'
+    ) {
+      void navigate({ to: '/2fa-challenge' });
+    } else if (status === 'authenticated' && isPublic) {
+      void navigate({ to: '/' });
+    }
+  }, [status, isPublic, location.pathname, navigate]);
+
+  if (status === 'loading') {
+    return (
+      <div
+        data-theme='apexline'
+        className='flex h-full items-center justify-center bg-bg-primary text-text-tertiary'
+      >
+        <TopBar />
+      </div>
+    );
+  }
+
+  if (isPublic) {
+    return (
+      <div
+        data-theme='apexline'
+        className='flex h-full flex-col bg-bg-primary text-text-primary'
+      >
+        <TopBar />
+        <main className='flex-1 overflow-auto'>
+          <Outlet />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div
       data-theme='apexline'
