@@ -3,6 +3,13 @@
 // the `./main/handler` module from `src/main.ts` to avoid pulling
 // renderer code (React UI) into the main-process bundle.
 
+export {
+  useLogout,
+  useSignIn,
+  useSignUp,
+  useStartGoogleLogin,
+  useVerify2fa,
+} from './api';
 export { useAuthBootstrap, useAuthStore } from './model/use-auth-store';
 export { SignInForm } from './ui/sign-in-form';
 export { SignUpForm } from './ui/sign-up-form';
