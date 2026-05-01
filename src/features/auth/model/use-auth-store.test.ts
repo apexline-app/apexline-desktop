@@ -30,9 +30,6 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-const getApi = () =>
-  (globalThis as unknown as { window: { api: MockApi } }).window.api;
-
 describe('useAuthStore', () => {
   it('starts in loading state with no user', () => {
     const { result } = renderHook(() => useAuthStore());
@@ -78,70 +75,5 @@ describe('useAuthStore', () => {
 
     expect(result.current.status).toBe('awaiting-2fa');
     expect(result.current.user).toBeNull();
-  });
-
-  it('signIn forwards to IPC and returns requires2fa', async () => {
-    getApi().invoke.mockResolvedValue({ ok: true, requires2fa: true });
-    const { result } = renderHook(() => useAuthStore());
-
-    const res = await result.current.signIn({
-      email: 'a@b.test',
-      password: 'pwd',
-    });
-
-    expect(getApi().invoke).toHaveBeenCalledWith('auth:sign-in', {
-      email: 'a@b.test',
-      password: 'pwd',
-    });
-    expect(res.requires2fa).toBe(true);
-  });
-
-  it('signUp forwards to IPC', async () => {
-    getApi().invoke.mockResolvedValue({ ok: true });
-    const { result } = renderHook(() => useAuthStore());
-
-    await result.current.signUp({
-      email: 'new@b.test',
-      password: 'password',
-      nickname: 'newbie',
-    });
-
-    expect(getApi().invoke).toHaveBeenCalledWith('auth:sign-up', {
-      email: 'new@b.test',
-      password: 'password',
-      nickname: 'newbie',
-    });
-  });
-
-  it('verify2fa forwards otp to IPC', async () => {
-    getApi().invoke.mockResolvedValue({ ok: true });
-    const { result } = renderHook(() => useAuthStore());
-
-    await result.current.verify2fa('123456');
-
-    expect(getApi().invoke).toHaveBeenCalledWith('auth:verify-2fa', {
-      otp: '123456',
-    });
-  });
-
-  it('startGoogleLogin invokes IPC', async () => {
-    getApi().invoke.mockResolvedValue({ ok: true });
-    const { result } = renderHook(() => useAuthStore());
-
-    await result.current.startGoogleLogin();
-
-    expect(getApi().invoke).toHaveBeenCalledWith(
-      'auth:start-google-login',
-      undefined,
-    );
-  });
-
-  it('logout invokes IPC', async () => {
-    getApi().invoke.mockResolvedValue({ ok: true });
-    const { result } = renderHook(() => useAuthStore());
-
-    await result.current.logout();
-
-    expect(getApi().invoke).toHaveBeenCalledWith('auth:logout', undefined);
   });
 });

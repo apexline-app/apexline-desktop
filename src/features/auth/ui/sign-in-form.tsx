@@ -1,49 +1,47 @@
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 
-import { useAuthStore } from '@/features/auth/model/use-auth-store';
+import { useSignIn } from '@/features/auth/api/use-sign-in';
+import { useStartGoogleLogin } from '@/features/auth/api/use-start-google-login';
 
 export function SignInForm() {
   const navigate = useNavigate();
-  const signIn = useAuthStore(s => s.signIn);
-  const startGoogleLogin = useAuthStore(s => s.startGoogleLogin);
+  const {
+    mutate: signIn,
+    isPending: signInPending,
+    error: signInError,
+  } = useSignIn();
+  const {
+    mutate: startGoogleLogin,
+    isPending: googlePending,
+    error: googleError,
+  } = useStartGoogleLogin();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const pending = signInPending || googlePending;
+  const error = signInError?.message ?? googleError?.message ?? null;
+
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (pending) return;
-    setError(null);
-    setPending(true);
-    try {
-      const { requires2fa } = await signIn({ email, password });
-      if (requires2fa) {
-        void navigate({ to: '/2fa-challenge' });
-      } else {
-        void navigate({ to: '/' });
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'sign-in failed');
-    } finally {
-      setPending(false);
-    }
+    signIn(
+      { email, password },
+      {
+        onSuccess: ({ requires2fa }) => {
+          void navigate({ to: requires2fa ? '/2fa-challenge' : '/' });
+        },
+      },
+    );
   };
 
-  const onGoogle = async () => {
+  const onGoogle = () => {
     if (pending) return;
-    setError(null);
-    setPending(true);
-    try {
-      await startGoogleLogin();
-      void navigate({ to: '/' });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'google login failed');
-    } finally {
-      setPending(false);
-    }
+    startGoogleLogin(undefined, {
+      onSuccess: () => void navigate({ to: '/' }),
+    });
   };
 
   return (
@@ -92,7 +90,7 @@ export function SignInForm() {
           disabled={pending}
           className='rounded-md bg-brand-primary px-3 py-2 text-sm font-medium text-bg-primary disabled:opacity-50'
         >
-          {pending ? 'Signing in…' : 'Sign in'}
+          {signInPending ? 'Signing in…' : 'Sign in'}
         </button>
         <button
           type='button'
@@ -100,7 +98,7 @@ export function SignInForm() {
           disabled={pending}
           className='rounded-md border border-border-subtle px-3 py-2 text-sm disabled:opacity-50'
         >
-          Sign in with Google
+          {googlePending ? 'Opening browser…' : 'Sign in with Google'}
         </button>
         <a
           href='/sign-up'

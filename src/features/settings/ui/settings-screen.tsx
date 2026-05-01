@@ -1,33 +1,29 @@
-import { useRef, useState } from 'react';
-
+import { useSettingsMutation } from '@/features/settings/api/use-settings-mutation';
+import { useSettingsQuery } from '@/features/settings/api/use-settings-query';
 import type { Settings } from '@/features/settings/contracts';
-import { useSettings } from '@/features/settings/model/use-settings';
 
 type SetInput =
   | { key: 'theme'; value: Settings['theme'] }
   | { key: 'telemetryHz'; value: Settings['telemetryHz'] };
 
 export function SettingsScreen() {
-  const { settings, set } = useSettings();
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const requestSeq = useRef(0);
-
-  const onSet = (input: SetInput) => {
-    const seq = ++requestSeq.current;
-    setSaveError(null);
-    void set(input).catch((err: unknown) => {
-      // Stale rejection from out-of-order request → ignore so we don't
-      // show an old failure after a newer click succeeded.
-      if (seq !== requestSeq.current) return;
-      setSaveError(err instanceof Error ? err.message : String(err));
-    });
-  };
+  const { data: settings } = useSettingsQuery();
+  const {
+    mutate: setSettings,
+    error: saveError,
+    isPending,
+  } = useSettingsMutation();
 
   if (!settings) {
     return (
       <p className='font-mono text-sm text-text-tertiary'>loading settings…</p>
     );
   }
+
+  const onSet = (input: SetInput) => {
+    if (isPending) return;
+    setSettings(input);
+  };
 
   return (
     <section className='flex max-w-xl flex-col gap-6'>
@@ -44,7 +40,7 @@ export function SettingsScreen() {
           role='alert'
           className='rounded-md border border-danger-border bg-danger-bg p-3 font-mono text-xs text-danger-text'
         >
-          failed to save: {saveError}
+          failed to save: {saveError.message}
         </div>
       )}
 

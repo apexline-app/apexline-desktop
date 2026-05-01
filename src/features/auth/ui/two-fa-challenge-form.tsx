@@ -1,33 +1,25 @@
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 
-import { useAuthStore } from '@/features/auth/model/use-auth-store';
+import { useVerify2fa } from '@/features/auth/api/use-verify-2fa';
 
 export function TwoFaChallengeForm() {
   const navigate = useNavigate();
-  const verify2fa = useAuthStore(s => s.verify2fa);
+  const { mutate: verify2fa, isPending, error } = useVerify2fa();
   const [otp, setOtp] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (pending) return;
-    setError(null);
-    setPending(true);
-    try {
-      await verify2fa(otp);
-      void navigate({ to: '/' });
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'verification failed';
-      setError(msg);
-      if (msg === 'challenge_expired') {
-        void navigate({ to: '/sign-in' });
-      }
-    } finally {
-      setPending(false);
-    }
+    if (isPending) return;
+    verify2fa(otp, {
+      onSuccess: () => void navigate({ to: '/' }),
+      onError: err => {
+        if (err.message === 'challenge_expired') {
+          void navigate({ to: '/sign-in' });
+        }
+      },
+    });
   };
 
   return (
@@ -50,7 +42,7 @@ export function TwoFaChallengeForm() {
           type='text'
           required
           autoFocus
-          disabled={pending}
+          disabled={isPending}
           inputMode='numeric'
           pattern='[0-9a-zA-Z]*'
           placeholder='123456'
@@ -60,15 +52,15 @@ export function TwoFaChallengeForm() {
         />
         {error && (
           <p role='alert' className='text-xs text-danger-text'>
-            {error}
+            {error.message}
           </p>
         )}
         <button
           type='submit'
-          disabled={pending}
+          disabled={isPending}
           className='rounded-md bg-brand-primary px-3 py-2 text-sm font-medium text-bg-primary disabled:opacity-50'
         >
-          {pending ? 'Verifying…' : 'Verify'}
+          {isPending ? 'Verifying…' : 'Verify'}
         </button>
       </form>
     </section>

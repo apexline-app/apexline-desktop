@@ -1,0 +1,26 @@
+import { useEffect } from 'react';
+
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+
+export const settingsQueryKey = ['settings'] as const;
+
+const fetchSettings = () => window.api.invoke('settings:get-all', undefined);
+
+export const useSettingsQuery = () => {
+  const qc = useQueryClient();
+
+  useEffect(() => {
+    const unsubscribe = window.api.on('settings:changed', next => {
+      qc.setQueryData(settingsQueryKey, next);
+    });
+    // reconcile any settings:changed event fired between mount and subscribe
+    void qc.invalidateQueries({ queryKey: settingsQueryKey });
+    return unsubscribe;
+  }, [qc]);
+
+  return useQuery({
+    queryKey: settingsQueryKey,
+    queryFn: fetchSettings,
+    staleTime: Infinity,
+  });
+};

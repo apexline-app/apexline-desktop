@@ -1,31 +1,26 @@
-import { type FormEvent, useState } from 'react';
+import { type SubmitEvent, useState } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 
-import { useAuthStore } from '@/features/auth/model/use-auth-store';
+import { useSignUp } from '@/features/auth/api/use-sign-up';
 
 export function SignUpForm() {
   const navigate = useNavigate();
-  const signUp = useAuthStore(s => s.signUp);
+  const { mutate: signUp, isPending, error } = useSignUp();
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [nickname, setNickname] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false);
 
-  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (pending) return;
-    setError(null);
-    setPending(true);
-    try {
-      await signUp({ email, password, nickname });
-      void navigate({ to: '/sign-in' });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'sign-up failed');
-    } finally {
-      setPending(false);
-    }
+    if (isPending) return;
+    signUp(
+      { email, password, nickname },
+      {
+        onSuccess: () => void navigate({ to: '/sign-in' }),
+      },
+    );
   };
 
   return (
@@ -47,7 +42,7 @@ export function SignUpForm() {
           id='sign-up-nickname'
           type='text'
           required
-          disabled={pending}
+          disabled={isPending}
           minLength={3}
           maxLength={30}
           placeholder='nickname'
@@ -62,7 +57,7 @@ export function SignUpForm() {
           id='sign-up-email'
           type='email'
           required
-          disabled={pending}
+          disabled={isPending}
           placeholder='email'
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -75,7 +70,7 @@ export function SignUpForm() {
           id='sign-up-password'
           type='password'
           required
-          disabled={pending}
+          disabled={isPending}
           minLength={8}
           placeholder='password (min 8)'
           value={password}
@@ -84,15 +79,15 @@ export function SignUpForm() {
         />
         {error && (
           <p role='alert' className='text-xs text-danger-text'>
-            {error}
+            {error.message}
           </p>
         )}
         <button
           type='submit'
-          disabled={pending}
+          disabled={isPending}
           className='rounded-md bg-brand-primary px-3 py-2 text-sm font-medium text-bg-primary disabled:opacity-50'
         >
-          {pending ? 'Creating…' : 'Create account'}
+          {isPending ? 'Creating…' : 'Create account'}
         </button>
         <a
           href='/sign-in'
