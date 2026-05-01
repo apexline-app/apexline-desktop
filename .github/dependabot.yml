@@ -1,19 +1,6 @@
 version: 2
 
 updates:
-  # Internal apexline packages — daily for fast iteration when publishing apr / toolkit-js
-  - package-ecosystem: npm
-    directory: "/"
-    schedule:
-      interval: daily
-      time: "04:00"
-    allow:
-      - dependency-name: "@apexline-app/*"
-    commit-message:
-      prefix: "chore(deps)"
-    open-pull-requests-limit: 5
-
-  # External deps — weekly batches
   - package-ecosystem: npm
     directory: "/"
     schedule:
@@ -24,6 +11,12 @@ updates:
       prefix: "chore(deps)"
       prefix-development: "chore(deps-dev)"
     groups:
+      apexline:
+        patterns:
+          - "@apexline-app/*"
+        update-types:
+          - "minor"
+          - "patch"
       eslint:
         patterns:
           - "eslint"
@@ -92,7 +85,6 @@ updates:
           - "tailwindcss"
           - "@tailwindcss/*"
     ignore:
-      - dependency-name: "@apexline-app/*"
       - dependency-name: "typescript"
         update-types: ["version-update:semver-major"]
       - dependency-name: "@electron/fuses"
