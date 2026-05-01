@@ -15,6 +15,7 @@ export function SignInForm() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (pending) return;
     setError(null);
     setPending(true);
     try {
@@ -32,6 +33,7 @@ export function SignInForm() {
   };
 
   const onGoogle = async () => {
+    if (pending) return;
     setError(null);
     setPending(true);
     try {
@@ -54,23 +56,37 @@ export function SignInForm() {
         <p className='text-xs text-text-tertiary'>
           Placeholder form — wired to IPC. apr 0.2.0 will replace these inputs.
         </p>
+        <label htmlFor='sign-in-email' className='sr-only'>
+          Email
+        </label>
         <input
+          id='sign-in-email'
           type='email'
           required
+          disabled={pending}
           placeholder='email'
           value={email}
           onChange={e => setEmail(e.target.value)}
           className='rounded-md border border-border-subtle bg-bg-primary px-3 py-2 text-sm'
         />
+        <label htmlFor='sign-in-password' className='sr-only'>
+          Password
+        </label>
         <input
+          id='sign-in-password'
           type='password'
           required
+          disabled={pending}
           placeholder='password'
           value={password}
           onChange={e => setPassword(e.target.value)}
           className='rounded-md border border-border-subtle bg-bg-primary px-3 py-2 text-sm'
         />
-        {error && <p className='text-xs text-danger-text'>{error}</p>}
+        {error && (
+          <p role='alert' className='text-xs text-danger-text'>
+            {error}
+          </p>
+        )}
         <button
           type='submit'
           disabled={pending}

@@ -13,6 +13,7 @@ export function TwoFaChallengeForm() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (pending) return;
     setError(null);
     setPending(true);
     try {
@@ -41,10 +42,15 @@ export function TwoFaChallengeForm() {
         <p className='text-xs text-text-tertiary'>
           Enter the code from your authenticator app or a backup code.
         </p>
+        <label htmlFor='otp' className='text-xs text-text-secondary'>
+          Verification code
+        </label>
         <input
+          id='otp'
           type='text'
           required
           autoFocus
+          disabled={pending}
           inputMode='numeric'
           pattern='[0-9a-zA-Z]*'
           placeholder='123456'
@@ -52,7 +58,11 @@ export function TwoFaChallengeForm() {
           onChange={e => setOtp(e.target.value)}
           className='rounded-md border border-border-subtle bg-bg-primary px-3 py-2 font-mono text-sm tracking-widest'
         />
-        {error && <p className='text-xs text-danger-text'>{error}</p>}
+        {error && (
+          <p role='alert' className='text-xs text-danger-text'>
+            {error}
+          </p>
+        )}
         <button
           type='submit'
           disabled={pending}

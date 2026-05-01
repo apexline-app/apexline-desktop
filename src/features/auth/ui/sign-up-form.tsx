@@ -15,6 +15,7 @@ export function SignUpForm() {
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (pending) return;
     setError(null);
     setPending(true);
     try {
@@ -39,9 +40,14 @@ export function SignUpForm() {
         <p className='text-xs text-text-tertiary'>
           Placeholder form — wired to IPC. apr 0.2.0 will replace these inputs.
         </p>
+        <label htmlFor='sign-up-nickname' className='sr-only'>
+          Nickname
+        </label>
         <input
+          id='sign-up-nickname'
           type='text'
           required
+          disabled={pending}
           minLength={3}
           maxLength={30}
           placeholder='nickname'
@@ -49,24 +55,38 @@ export function SignUpForm() {
           onChange={e => setNickname(e.target.value)}
           className='rounded-md border border-border-subtle bg-bg-primary px-3 py-2 text-sm'
         />
+        <label htmlFor='sign-up-email' className='sr-only'>
+          Email
+        </label>
         <input
+          id='sign-up-email'
           type='email'
           required
+          disabled={pending}
           placeholder='email'
           value={email}
           onChange={e => setEmail(e.target.value)}
           className='rounded-md border border-border-subtle bg-bg-primary px-3 py-2 text-sm'
         />
+        <label htmlFor='sign-up-password' className='sr-only'>
+          Password
+        </label>
         <input
+          id='sign-up-password'
           type='password'
           required
+          disabled={pending}
           minLength={8}
           placeholder='password (min 8)'
           value={password}
           onChange={e => setPassword(e.target.value)}
           className='rounded-md border border-border-subtle bg-bg-primary px-3 py-2 text-sm'
         />
-        {error && <p className='text-xs text-danger-text'>{error}</p>}
+        {error && (
+          <p role='alert' className='text-xs text-danger-text'>
+            {error}
+          </p>
+        )}
         <button
           type='submit'
           disabled={pending}

@@ -18,7 +18,7 @@
 
 ## Three layers
 
-```
+```text
 src/
 ├── features/        ← domain slices — where business logic lives
 ├── shared/          ← cross-feature utilities (API helpers, IPC infrastructure)
@@ -34,7 +34,7 @@ src/
 
 Each feature is a self-contained domain unit. Layout:
 
-```
+```text
 features/<domain>/
 ├── index.ts                # PUBLIC API barrel — only this is imported from outside
 ├── contracts.ts            # types + Zod schemas + IPC channel maps (cross-process)
@@ -55,7 +55,7 @@ Real example: see `src/features/auth/`.
 
 ### `shared/` — cross-cutting utilities
 
-```
+```text
 shared/
 ├── api/                    # auth-fetch, api-paths, api-mode, envelope helpers
 ├── ipc/                    # validation (Zod helper), types (Commands/Events union)
@@ -67,7 +67,7 @@ shared/
 
 ### `platform/` — main-process infrastructure
 
-```
+```text
 platform/
 ├── storage/                # encrypted-storage (safeStorage), file-storage (atomic writes)
 ├── observability/          # Sentry init-main, init-renderer, beforeSend scrubber

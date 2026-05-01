@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 import type { Settings } from '@/features/settings/contracts';
 import { useSettings } from '@/features/settings/model/use-settings';
@@ -10,10 +10,15 @@ type SetInput =
 export function SettingsScreen() {
   const { settings, set } = useSettings();
   const [saveError, setSaveError] = useState<string | null>(null);
+  const requestSeq = useRef(0);
 
   const onSet = (input: SetInput) => {
+    const seq = ++requestSeq.current;
     setSaveError(null);
-    set(input).catch((err: unknown) => {
+    void set(input).catch((err: unknown) => {
+      // Stale rejection from out-of-order request → ignore so we don't
+      // show an old failure after a newer click succeeded.
+      if (seq !== requestSeq.current) return;
       setSaveError(err instanceof Error ? err.message : String(err));
     });
   };
