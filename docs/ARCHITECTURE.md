@@ -91,7 +91,7 @@ Process-bound infrastructure. **Renderer code never imports from `platform/`** (
 1. **Only `features/<x>/index.ts` may be imported from outside the feature.** Internal files (`features/auth/model/use-auth-store.ts`) are private. Use `eslint-plugin-boundaries` if enforcement is needed.
 2. **Features do not import from other features.** If `dashboard` needs data from `series`, either (a) `series` exposes a hook/type via `features/series/index.ts` and `dashboard` imports through the public API, or (b) shared state moves to `shared/`. Pick (a) when the dependency is one-directional; pick (b) when both features need it.
 3. **`shared/` and `platform/` never import from `features/`.** Dependency graph is one-way: `routes → features → shared + platform`.
-4. **Main-side and renderer-side of a feature communicate ONLY via `contracts.ts` + IPC channels.** Direct imports across the process boundary will explode at runtime.
+4. **Main-side and renderer-side of a feature communicate ONLY via feature contracts (`contracts/` by default, `contracts.ts` only for tiny features) + IPC channels.** Direct imports across the process boundary will explode at runtime.
 5. **`shared/ipc/types.ts` aggregates `Commands` / `Events` from all feature contracts.** When adding a new feature with IPC, add its `<X>Commands` / `<X>Events` to the union there.
 6. **Routes are thin.** No `useState`, no `useEffect`, no business logic in `routes/*.tsx`. Just `import { X } from '@/features/x'` and render. UI lives in `features/<x>/ui/`.
 
@@ -343,10 +343,13 @@ import type { SeriesFilters } from '@/features/series/contracts';
 export const seriesListQueryKey = (filters: SeriesFilters) =>
   ['series', filters] as const;
 
+const fetchSeriesList = (filters: SeriesFilters) =>
+  window.api.invoke('series:list', filters);
+
 export const useSeriesList = (filters: SeriesFilters) =>
   useQuery({
     queryKey: seriesListQueryKey(filters),
-    queryFn: () => window.api.invoke('series:list', filters),
+    queryFn: () => fetchSeriesList(filters),
   });
 ```
 
@@ -356,10 +359,12 @@ Mutation with invalidation:
 // features/series/api/use-track-series.ts
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
+const trackSeries = (pid: string) => window.api.invoke('series:track', { pid });
+
 export const useTrackSeries = () => {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (pid: string) => window.api.invoke('series:track', { pid }),
+    mutationFn: trackSeries,
     onSuccess: () => qc.invalidateQueries({ queryKey: ['series'] }),
   });
 };

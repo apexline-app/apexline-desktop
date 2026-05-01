@@ -13,6 +13,8 @@ export const useSettingsQuery = () => {
     const unsubscribe = window.api.on('settings:changed', next => {
       qc.setQueryData(settingsQueryKey, next);
     });
+    // reconcile any settings:changed event fired between mount and subscribe
+    void qc.invalidateQueries({ queryKey: settingsQueryKey });
     return unsubscribe;
   }, [qc]);
 
