@@ -267,9 +267,12 @@ const handleStartGoogleLogin = async () => {
       pkceCodeVerifier: codeVerifier,
       expectedState: csrfState,
     });
+    if (!tokens.refresh_token) {
+      throw new Error('google-login-missing-refresh-token');
+    }
     await persistSession({
       access_token: tokens.access_token,
-      refresh_token: tokens.refresh_token!,
+      refresh_token: tokens.refresh_token,
       expires_in: tokens.expires_in ?? 3600,
     });
     return { ok: true as const };
