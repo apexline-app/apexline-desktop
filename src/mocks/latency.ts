@@ -33,8 +33,11 @@ export const withLatency = (handler: HttpHandler): HttpHandler => {
   const factory =
     METHOD_FACTORIES[method as keyof typeof METHOD_FACTORIES] ?? http.all;
   const range = RANGES[method] ?? DEFAULT_RANGE;
-  const original = (handler as unknown as { resolver: HttpResponseResolver })
+  const original = (handler as unknown as { resolver?: HttpResponseResolver })
     .resolver;
+  if (typeof original !== 'function') {
+    return handler;
+  }
 
   return factory(handler.info.path, async info => {
     await delay(jitter(range));
