@@ -55,13 +55,15 @@ export const useBootSplash = ({
     completingTriggeredRef.current = true;
     setPhase('completing');
     setActiveIndex(stagesCount);
-    window.setTimeout(() => setPhase('dismissing'), completingHoldMs);
+    const t = window.setTimeout(() => setPhase('dismissing'), completingHoldMs);
+    return () => clearTimeout(t);
   }, [holdElapsed, done, stagesCount, completingHoldMs]);
 
   useEffect(() => {
     if (phase !== 'dismissing' || dismissingTriggeredRef.current) return;
     dismissingTriggeredRef.current = true;
-    window.setTimeout(() => onDismissed?.(), dismissTransitionMs);
+    const t = window.setTimeout(() => onDismissed?.(), dismissTransitionMs);
+    return () => clearTimeout(t);
   }, [phase, onDismissed, dismissTransitionMs]);
 
   useEffect(() => {

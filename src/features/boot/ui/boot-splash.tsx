@@ -50,15 +50,24 @@ export const BootSplash = ({
       data-theme='apexline'
       data-phase={phase}
       data-dismissing={phase === 'dismissing' || undefined}
-      role='status'
-      aria-live='polite'
-      aria-label='Loading Apexline'
       className='boot-splash relative h-full w-full overflow-hidden bg-bg-primary font-sans text-text-primary'
       style={{
         backgroundImage:
           'radial-gradient(ellipse 80% 60% at 30% 30%, rgba(255,107,53,0.10) 0%, transparent 60%), radial-gradient(ellipse 70% 60% at 80% 80%, rgba(76,139,245,0.08) 0%, transparent 65%)',
       }}
     >
+      <p
+        role='status'
+        aria-live='polite'
+        aria-atomic='true'
+        aria-label={
+          phase === 'dismissing' ? 'Apexline ready' : 'Loading Apexline'
+        }
+        className='sr-only'
+      >
+        {phase === 'dismissing' ? 'Apexline ready' : 'Loading Apexline'}
+      </p>
+
       <BootSplashGrid />
       <div className='boot-splash__scanlines pointer-events-none fixed inset-0 z-[1]' />
 

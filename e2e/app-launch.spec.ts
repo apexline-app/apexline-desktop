@@ -9,9 +9,18 @@ test('main window opens on sign-in route when unauthenticated', async () => {
   await expect(window).toHaveTitle('Apexline');
 
   // BootSplash holds for a min duration then fades out.
-  const splash = window.getByRole('status', { name: 'Loading Apexline' });
-  await expect(splash).toBeVisible();
+  const splash = window.getByRole('status', {
+    name: 'Loading Apexline',
+    includeHidden: true,
+  });
+  await expect(splash).toBeAttached();
   await expect(splash).toHaveCount(0, { timeout: 20_000 });
+  await expect(
+    window.getByRole('status', {
+      name: 'Apexline ready',
+      includeHidden: true,
+    }),
+  ).toBeAttached();
 
   const banner = window.getByRole('banner');
   await expect(banner).toBeVisible();

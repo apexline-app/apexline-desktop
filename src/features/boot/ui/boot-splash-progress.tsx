@@ -15,10 +15,14 @@ export const BootSplashProgress = ({
   activeIndex,
   totalStages,
 }: BootSplashProgressProps) => {
-  const segmentPct = PROGRESS_CEIL_PCT / totalStages;
   const value =
     phase === 'progressing'
-      ? Math.min((activeIndex + 1) * segmentPct, PROGRESS_CEIL_PCT)
+      ? totalStages > 0
+        ? Math.min(
+            Math.max(activeIndex + 1, 0) * (PROGRESS_CEIL_PCT / totalStages),
+            PROGRESS_CEIL_PCT,
+          )
+        : 0
       : 100;
 
   return (
