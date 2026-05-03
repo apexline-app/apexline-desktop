@@ -92,8 +92,10 @@
     "vitest": "4.1.5"
   },
   "dependencies": {
-    "@apexline-app/apr": "0.2.0",
+    "@apexline-app/apr": "0.3.0",
     "@apexline-app/http-toolkit-js": "0.1.2",
+    "@fontsource-variable/inter": "5.2.8",
+    "@fontsource-variable/jetbrains-mono": "5.2.8",
     "@hookform/resolvers": "5.2.2",
     "@sentry/electron": "7.13.0",
     "@tanstack/react-query": "5.100.7",

@@ -103,13 +103,13 @@ export function SignUpForm() {
             />
 
             {error && (
-              <Alert variant='destructive'>
+              <Alert tone='error'>
                 <AlertDescription>{error.message}</AlertDescription>
               </Alert>
             )}
 
             <Button
-              variant='default'
+              variant='primary'
               type='submit'
               disabled={isPending}
               className='w-full'
@@ -121,7 +121,7 @@ export function SignUpForm() {
         </Form>
 
         <Button
-          variant='link'
+          variant='ghost'
           className='w-full'
           onClick={() => void navigate({ to: '/sign-in' })}
         >

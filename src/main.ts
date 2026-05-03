@@ -17,8 +17,8 @@ if (started) {
 
 const createWindow = () => {
   const windowState = windowStateKeeper({
-    defaultWidth: 1280,
-    defaultHeight: 800,
+    defaultWidth: 1920,
+    defaultHeight: 1080,
   });
 
   const mainWindow = new BrowserWindow({
@@ -26,6 +26,8 @@ const createWindow = () => {
     y: windowState.y,
     width: windowState.width,
     height: windowState.height,
+    minWidth: 960,
+    minHeight: 600,
     backgroundColor: '#0a0a0b',
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
     titleBarOverlay:

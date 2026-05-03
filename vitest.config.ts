@@ -15,6 +15,11 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
     css: true,
+    server: {
+      deps: {
+        inline: ['@apexline-app/apr'],
+      },
+    },
     restoreMocks: true,
     clearMocks: true,
     unstubGlobals: true,

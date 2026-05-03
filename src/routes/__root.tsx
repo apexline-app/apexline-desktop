@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { LogoLockup } from '@apexline-app/apr';
 import {
@@ -10,6 +10,7 @@ import {
 } from '@tanstack/react-router';
 
 import { useAuthBootstrap, useAuthStore } from '@/features/auth';
+import { BootSplash } from '@/features/boot';
 
 const PUBLIC_ROUTES = ['/sign-in', '/sign-up', '/2fa-challenge'] as const;
 
@@ -34,6 +35,7 @@ function AppShell() {
   const status = useAuthStore(s => s.status);
   const location = useLocation();
   const navigate = useNavigate();
+  const [splashDone, setSplashDone] = useState(false);
 
   const isPublic = (PUBLIC_ROUTES as ReadonlyArray<string>).includes(
     location.pathname,
@@ -53,14 +55,12 @@ function AppShell() {
     }
   }, [status, isPublic, location.pathname, navigate]);
 
-  if (status === 'loading') {
+  if (!splashDone) {
     return (
-      <div
-        data-theme='apexline'
-        className='flex h-full items-center justify-center bg-bg-primary text-text-tertiary'
-      >
-        <TopBar />
-      </div>
+      <BootSplash
+        done={status !== 'loading'}
+        onDismissed={() => setSplashDone(true)}
+      />
     );
   }
 
