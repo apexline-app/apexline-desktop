@@ -79,7 +79,7 @@ export function TwoFaChallengeForm() {
             />
 
             {error && (
-              <Alert variant='destructive'>
+              <Alert tone='error'>
                 <AlertDescription>{error.message}</AlertDescription>
               </Alert>
             )}

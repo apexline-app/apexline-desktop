@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 
 import { initSentryRenderer } from '@/platform/observability/init-renderer';
 import { API_MODE } from '@/shared/api/api-mode';
+import '@/shared/cjs-shim';
 
 import { App } from './app';
 import './index.css';
@@ -20,9 +21,18 @@ async function startMocks() {
   });
 }
 
+async function preloadFonts() {
+  if (!document.fonts) return;
+  await Promise.all([
+    document.fonts.load('400 14px "Inter Variable"'),
+    document.fonts.load('600 14px "Inter Variable"'),
+    document.fonts.load('400 12px "JetBrains Mono Variable"'),
+  ]).catch(() => undefined);
+}
+
 async function bootstrap() {
   try {
-    await startMocks();
+    await Promise.all([startMocks(), preloadFonts()]);
   } catch (error) {
     console.error('[msw] failed to start mock worker:', error);
   }

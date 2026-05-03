@@ -1,0 +1,103 @@
+.boot-splash {
+  transition:
+    opacity 420ms ease-out,
+    transform 420ms ease-out;
+}
+
+.boot-splash[data-dismissing='true'] {
+  opacity: 0;
+  transform: scale(1.015);
+  pointer-events: none;
+}
+
+.boot-splash__scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 3px,
+    rgba(255, 107, 53, 0.018) 3px,
+    rgba(255, 107, 53, 0.018) 4px
+  );
+}
+
+.boot-splash__trail {
+  stroke-dasharray: 60;
+  animation: boot-splash-draw 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes boot-splash-draw {
+  0% {
+    stroke-dashoffset: 60;
+    opacity: 0.9;
+  }
+  55% {
+    stroke-dashoffset: 0;
+    opacity: 1;
+  }
+  100% {
+    stroke-dashoffset: -60;
+    opacity: 0;
+  }
+}
+
+.boot-splash__dot {
+  transform-origin: 20px 8px;
+  animation: boot-splash-pulse 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes boot-splash-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.75;
+  }
+}
+
+.boot-splash__tagline {
+  animation: boot-splash-tagline 2s ease-in-out infinite;
+}
+
+@keyframes boot-splash-tagline {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.95;
+  }
+}
+
+.boot-splash__live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--color-success-text);
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18);
+  animation: boot-splash-live 1.6s ease-in-out infinite;
+}
+
+@keyframes boot-splash-live {
+  0%,
+  100% {
+    box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.18);
+  }
+  50% {
+    box-shadow: 0 0 0 7px rgba(74, 222, 128, 0.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boot-splash {
+    transition: none;
+  }
+  .boot-splash__trail,
+  .boot-splash__dot,
+  .boot-splash__tagline,
+  .boot-splash__live-dot {
+    animation: none;
+  }
+}
