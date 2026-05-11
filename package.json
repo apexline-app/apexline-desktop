@@ -101,8 +101,8 @@
     "electron-squirrel-startup": "1.0.1",
     "electron-window-state": "5.0.3",
     "openid-client": "6.8.4",
-    "react": "19.2.5",
-    "react-dom": "19.2.5",
+    "react": "19.2.6",
+    "react-dom": "19.2.6",
     "react-hook-form": "7.74.0",
     "zod": "4.4.1",
     "zustand": "5.0.12"
