@@ -95,7 +95,7 @@
     "@apexline-app/apr": "0.2.0",
     "@apexline-app/http-toolkit-js": "0.1.2",
     "@hookform/resolvers": "5.2.2",
-    "@sentry/electron": "7.13.0",
+    "@sentry/electron": "7.14.0",
     "@tanstack/react-query": "5.100.7",
     "@tanstack/react-router": "1.169.1",
     "electron-squirrel-startup": "1.0.1",
